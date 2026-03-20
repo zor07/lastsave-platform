@@ -1,12 +1,10 @@
-FROM eclipse-temurin:17-jdk AS build
+FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
-COPY gradlew gradlew
-COPY gradle gradle
 COPY build.gradle.kts settings.gradle.kts ./
 COPY src src
-RUN ./gradlew bootJar --no-daemon
+RUN gradle bootJar --no-daemon
 
-FROM eclipse-temurin:17-jre
+FROM bellsoft/liberica-openjdk-alpine:17
 WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 EXPOSE 8080
