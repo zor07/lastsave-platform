@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DB_NAME:-lastsave}
+      POSTGRES_USER: ${DB_USER:-lastsave}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-lastsave}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-lastsave}
+      DB_USER: ${DB_USER:-lastsave}
+      DB_PASSWORD: ${DB_PASSWORD:-lastsave}
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-changeme}
+      GITHUB_TEMPLATE_REPO: ${GITHUB_TEMPLATE_REPO:-org/template}
+      GITHUB_ORG: ${GITHUB_ORG:-org}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-token}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-botname}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-client-id}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-client-secret}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata: {}

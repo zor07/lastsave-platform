@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: lastsave-platform
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+github:
+  token: ${GITHUB_TOKEN}
+  template-repo: ${GITHUB_TEMPLATE_REPO}
+  org: ${GITHUB_ORG}
+  client-id: ${GITHUB_CLIENT_ID}
+  client-secret: ${GITHUB_CLIENT_SECRET}
+
+telegram:
+  bot:
+    token: ${TELEGRAM_BOT_TOKEN}
+    username: ${TELEGRAM_BOT_USERNAME}
+
+app:
+  base-url: ${APP_BASE_URL}
