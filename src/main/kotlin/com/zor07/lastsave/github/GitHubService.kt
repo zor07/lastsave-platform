@@ -18,7 +18,7 @@ class GitHubService(
 
     fun createRepoFromTemplate(githubUsername: String): String {
         val repoName = "${githubUsername}-course"
-        val url = "https://api.github.com/repos/$templateRepo/generate"
+        val url = "https://api.github.com/repos/$org/$templateRepo/generate"
         val headers = authHeaders().apply {
             add("Accept", "application/vnd.github.baptiste-preview+json")
         }
