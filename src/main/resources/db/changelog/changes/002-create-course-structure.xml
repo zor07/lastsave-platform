@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="002-create-course-structure" author="codex">
+        <createTable tableName="course">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="block">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="course_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="template_repo_url" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="block"
+                                 baseColumnNames="course_id"
+                                 constraintName="fk_block_course"
+                                 referencedTableName="course"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="topic">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="block_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="topic"
+                                 baseColumnNames="block_id"
+                                 constraintName="fk_topic_block"
+                                 referencedTableName="block"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="section">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="topic_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="unlock_condition" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="section"
+                                 baseColumnNames="topic_id"
+                                 constraintName="fk_section_topic"
+                                 referencedTableName="topic"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="material">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="section_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="title" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="url" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="material"
+                                 baseColumnNames="section_id"
+                                 constraintName="fk_material_section"
+                                 referencedTableName="section"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="student_progress">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="student_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="section_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pr_url" type="VARCHAR(1024)"/>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="started_at" type="TIMESTAMP"/>
+            <column name="completed_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="student_progress"
+                                 baseColumnNames="student_id"
+                                 constraintName="fk_student_progress_student"
+                                 referencedTableName="students"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="student_progress"
+                                 baseColumnNames="section_id"
+                                 constraintName="fk_student_progress_section"
+                                 referencedTableName="section"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="message">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="section_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sender" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="callback_text" type="VARCHAR(255)"/>
+            <column name="wait_for" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="message"
+                                 baseColumnNames="section_id"
+                                 constraintName="fk_message_section"
+                                 referencedTableName="section"
+                                 referencedColumnNames="id"/>
+
+        <createTable tableName="message_log">
+            <column name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="message_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="student_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sent_at" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="callback_received_at" type="TIMESTAMP"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="message_log"
+                                 baseColumnNames="message_id"
+                                 constraintName="fk_message_log_message"
+                                 referencedTableName="message"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="message_log"
+                                 baseColumnNames="student_id"
+                                 constraintName="fk_message_log_student"
+                                 referencedTableName="students"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>
