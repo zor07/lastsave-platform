@@ -2,10 +2,10 @@ package com.zor07.lastsave.service.auth
 
 import com.zor07.lastsave.dto.github.GitHubUser
 import com.zor07.lastsave.entity.Student
-import com.zor07.lastsave.service.StudentService
 import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.github.GitHubOAuthClient
 import com.zor07.lastsave.service.github.GitHubService
+import com.zor07.lastsave.service.student.StudentService
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith

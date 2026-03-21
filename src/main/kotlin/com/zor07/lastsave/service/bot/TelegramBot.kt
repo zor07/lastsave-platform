@@ -1,6 +1,6 @@
 package com.zor07.lastsave.service.bot
 
-import com.zor07.lastsave.service.StudentService
+import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
