@@ -26,6 +26,9 @@ Structure: layered (controllers, services, repositories, entities, dto)
 - Custom repository methods: integration tests with @DataJpaTest
 - Controllers: integration tests with @WebMvcTest, mock all services, test request/response parsing against hardcoded JSON strings
 
+## VCS 
+- Always do `git add` for every new file you create
+
 ## Build & Test
 ./gradlew build
 ./gradlew test
