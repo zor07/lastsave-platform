@@ -1,5 +1,6 @@
 package com.zor07.lastsave.service.github
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -10,7 +11,8 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class GitHubService(
-    private val restTemplate: RestTemplate = RestTemplate(),
+    @Qualifier("gitHubRestTemplate")
+    private val restTemplate: RestTemplate,
     @Value("\${github.token}") private val token: String,
     @Value("\${github.template-repo}") private val templateRepo: String,
     @Value("\${github.org}") private val org: String,
