@@ -38,7 +38,9 @@ class TelegramBot(
         update.callbackQuery?.let { callback ->
             val chatId = callback.message?.chatId ?: return
             val messageId = callback.data?.toLongOrNull() ?: return
-            messageCallbackService.handleCallback(chatId, messageId, callback.id)
+            val blockStart = messageCallbackService.handleCallback(chatId, messageId)
+            blockStart?.let { sendRepoLink(chatId, it.repoUrl, it.blockTitle) }
+            answerCallback(callback.id)
         }
     }
 

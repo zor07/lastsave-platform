@@ -4,6 +4,8 @@ import com.zor07.lastsave.dto.github.GitHubUser
 import com.zor07.lastsave.entity.Student
 import com.zor07.lastsave.service.github.GitHubOAuthClient
 import com.zor07.lastsave.service.progress.BlockProgressService
+import com.zor07.lastsave.service.progress.BlockStartResult
+import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.student.StudentService
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -27,6 +29,9 @@ class GitHubOAuthServiceImplTest {
     @Mock
     private lateinit var blockProgressService: BlockProgressService
 
+    @Mock
+    private lateinit var telegramBot: TelegramBot
+
     @InjectMocks
     private lateinit var service: GitHubOAuthServiceImpl
 
@@ -46,11 +51,25 @@ class GitHubOAuthServiceImplTest {
         given(gitHubOAuthClient.exchangeCodeForToken(code)).willReturn(token)
         given(gitHubOAuthClient.fetchUser(token)).willReturn(user)
         given(studentService.registerStudent(123L, "octocat", "Octo Cat")).willReturn(student)
+        val progress = com.zor07.lastsave.entity.StudentProgress(
+            id = 2L,
+            studentId = 1L,
+            sectionId = 10L,
+            status = com.zor07.lastsave.entity.enums.StudentProgressStatus.IN_PROGRESS,
+        )
+        given(blockProgressService.startFirstBlockIfNeeded(student)).willReturn(
+            BlockStartResult(
+                progress = progress,
+                repoUrl = "https://github.com/org/repo",
+                blockTitle = "block",
+            ),
+        )
 
         service.processCallback(code, state)
 
         verify(studentService).registerStudent(123L, "octocat", "Octo Cat")
         verify(blockProgressService).startFirstBlockIfNeeded(student)
+        verify(telegramBot).sendRepoLink(123L, "https://github.com/org/repo", "block")
     }
 
     @Test

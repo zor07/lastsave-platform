@@ -8,8 +8,8 @@ import com.zor07.lastsave.repository.SectionRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepository
 import com.zor07.lastsave.repository.TopicRepository
-import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.progress.BlockProgressService
+import com.zor07.lastsave.service.progress.BlockStartResult
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -22,18 +22,15 @@ class MessageCallbackServiceImpl(
     private val sectionRepository: SectionRepository,
     private val topicRepository: TopicRepository,
     private val blockProgressService: BlockProgressService,
-    private val telegramBot: TelegramBot,
 ) : MessageCallbackService {
 
-    override fun handleCallback(chatId: Long, messageId: Long, callbackQueryId: String) {
-        val student = studentRepository.findByTelegramChatId(chatId) ?: return
-        val message = messageRepository.findById(messageId).orElse(null) ?: return
+    override fun handleCallback(chatId: Long, messageId: Long): BlockStartResult? {
+        val student = studentRepository.findByTelegramChatId(chatId) ?: return null
+        val message = messageRepository.findById(messageId).orElse(null) ?: return null
 
-        markCallbackReceived(student.id ?: return, messageId)
+        markCallbackReceived(student.id ?: return null, messageId)
         completeCurrentSection(student.id, message.sectionId)
-        progressToNextSectionOrBlock(student.id, message.sectionId)
-
-        telegramBot.answerCallback(callbackQueryId)
+        return progressToNextSectionOrBlock(student.id, message.sectionId)
     }
 
     private fun markCallbackReceived(studentId: Long, messageId: Long) {
@@ -49,20 +46,21 @@ class MessageCallbackServiceImpl(
         studentProgressRepository.save(updated)
     }
 
-    private fun progressToNextSectionOrBlock(studentId: Long, currentSectionId: Long) {
-        val currentSection = sectionRepository.findById(currentSectionId).orElse(null) ?: return
+    private fun progressToNextSectionOrBlock(studentId: Long, currentSectionId: Long): BlockStartResult? {
+        val currentSection = sectionRepository.findById(currentSectionId).orElse(null) ?: return null
         val nextSection = findNextSection(currentSection)
         if (nextSection != null) {
             val progress = StudentProgress(
                 studentId = studentId,
-                sectionId = nextSection.id ?: return,
+                sectionId = nextSection.id ?: return null,
                 status = StudentProgressStatus.IN_PROGRESS,
                 startedAt = LocalDateTime.now(),
             )
             studentProgressRepository.save(progress)
+            return null
         } else {
-            val student = studentRepository.findById(studentId).orElse(null) ?: return
-            blockProgressService.startNextBlockIfExists(student, currentSection)
+            val student = studentRepository.findById(studentId).orElse(null) ?: return null
+            return blockProgressService.startNextBlockIfExists(student, currentSection)
         }
     }
 

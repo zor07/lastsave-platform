@@ -15,8 +15,8 @@ import com.zor07.lastsave.repository.SectionRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepository
 import com.zor07.lastsave.repository.TopicRepository
-import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.progress.BlockProgressService
+import com.zor07.lastsave.service.progress.BlockStartResult
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -53,9 +53,6 @@ class MessageCallbackServiceImplTest {
 
     @Mock
     private lateinit var blockProgressService: BlockProgressService
-
-    @Mock
-    private lateinit var telegramBot: TelegramBot
 
     @InjectMocks
     private lateinit var service: MessageCallbackServiceImpl
@@ -94,7 +91,7 @@ class MessageCallbackServiceImplTest {
         given(sectionRepository.findById(200L)).willReturn(Optional.of(currentSection))
         given(sectionRepository.findFirstByTopicIdAndOrderGreaterThanOrderByOrderAsc(300L, 1)).willReturn(nextSection)
 
-        service.handleCallback(10L, 100L, "cb-id")
+        val result = service.handleCallback(10L, 100L)
 
         val logCaptor = ArgumentCaptor.forClass(MessageLog::class.java)
         verify(messageLogRepository).save(logCaptor.capture())
@@ -106,7 +103,7 @@ class MessageCallbackServiceImplTest {
         assertThat(savedProgresses.any { it.status == StudentProgressStatus.COMPLETED }).isTrue()
         assertThat(savedProgresses.any { it.sectionId == 201L && it.status == StudentProgressStatus.IN_PROGRESS }).isTrue()
 
-        verify(telegramBot).answerCallback("cb-id")
+        assertThat(result).isNull()
         verifyNoInteractions(blockProgressService)
     }
 
@@ -147,9 +144,17 @@ class MessageCallbackServiceImplTest {
         given(topicRepository.findFirstByBlockIdAndOrderGreaterThanOrderByOrderAsc(400L, 2)).willReturn(null)
         given(studentRepository.findById(1L)).willReturn(Optional.of(student))
 
-        service.handleCallback(10L, 100L, "cb-id")
+        given(blockProgressService.startNextBlockIfExists(student, currentSection)).willReturn(
+            BlockStartResult(
+                progress = progress.copy(id = 99L, sectionId = 201L, status = StudentProgressStatus.IN_PROGRESS),
+                repoUrl = "repo",
+                blockTitle = "block",
+            ),
+        )
+
+        val result = service.handleCallback(10L, 100L)
 
         verify(blockProgressService).startNextBlockIfExists(student, currentSection)
-        verify(telegramBot).answerCallback("cb-id")
+        assertThat(result?.repoUrl).isEqualTo("repo")
     }
 }

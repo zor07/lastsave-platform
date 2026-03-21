@@ -9,7 +9,6 @@ import com.zor07.lastsave.repository.BlockRepository
 import com.zor07.lastsave.repository.SectionRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.TopicRepository
-import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.github.GitHubService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -23,37 +22,35 @@ class BlockProgressServiceImpl(
     private val sectionRepository: SectionRepository,
     private val studentProgressRepository: StudentProgressRepository,
     private val gitHubService: GitHubService,
-    private val telegramBot: TelegramBot,
 ) : BlockProgressService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun startFirstBlockIfNeeded(student: Student): StudentProgress? {
+    override fun startFirstBlockIfNeeded(student: Student): BlockStartResult? {
         val activeProgress = studentProgressRepository.findFirstByStudentIdAndStatusOrderByStartedAtDesc(
             student.id ?: return null,
             StudentProgressStatus.IN_PROGRESS,
         )
         if (activeProgress != null) {
-            return activeProgress
+            return null
         }
         val block = blockRepository.findFirstByOrderByOrderAsc() ?: return null
         return startBlock(student, block)
     }
 
-    override fun startNextBlockIfExists(student: Student, currentSection: Section): StudentProgress? {
+    override fun startNextBlockIfExists(student: Student, currentSection: Section): BlockStartResult? {
         val topic = topicRepository.findById(currentSection.topicId).orElse(null) ?: return null
         val currentBlock = blockRepository.findById(topic.blockId).orElse(null) ?: return null
         val nextBlock = blockRepository.findFirstByOrderGreaterThanOrderByOrderAsc(currentBlock.order) ?: return null
         return startBlock(student, nextBlock)
     }
 
-    private fun startBlock(student: Student, block: Block): StudentProgress? {
+    private fun startBlock(student: Student, block: Block): BlockStartResult? {
         val blockId = block.id ?: return null
         val firstSection = getFirstSection(blockId) ?: return null
         val repoName = "${student.githubUsername}-${slug(block.title)}"
         val repoUrl = gitHubService.createRepoFromTemplate(block.templateRepoUrl, repoName)
         gitHubService.addCollaborator(repoName, student.githubUsername)
-        telegramBot.sendRepoLink(student.telegramChatId, repoUrl, block.title)
 
         val progress = StudentProgress(
             studentId = student.id ?: return null,
@@ -63,7 +60,7 @@ class BlockProgressServiceImpl(
         )
         val saved = studentProgressRepository.save(progress)
         logger.info("Started block {} for student {}", blockId, student.id)
-        return saved
+        return BlockStartResult(progress = saved, repoUrl = repoUrl, blockTitle = block.title)
     }
 
     private fun getFirstSection(blockId: Long): Section? {

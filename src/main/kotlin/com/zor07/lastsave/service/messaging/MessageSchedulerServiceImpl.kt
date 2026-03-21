@@ -67,7 +67,11 @@ class MessageSchedulerServiceImpl(
         if (active != null) {
             return active
         }
-        return blockProgressService.startFirstBlockIfNeeded(student)
+        val started = blockProgressService.startFirstBlockIfNeeded(student)
+        started?.let {
+            telegramBot.sendRepoLink(student.telegramChatId, it.repoUrl, it.blockTitle)
+        }
+        return started?.progress
     }
 
     private fun sendFirstMessageOfSection(sectionId: Long, student: Student) {

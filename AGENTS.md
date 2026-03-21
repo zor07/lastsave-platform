@@ -20,6 +20,7 @@ Structure: layered (controllers, services, repositories, entities, dto)
 - Services: always define an interface first, then provide an implementation
 - No business logic in Repository layer
 - No custom Repository methods unless explicitly asked
+- Circular dependencies are not allowed. Fix by restructuring, not by @Lazy
 
 ## Testing
 - Services: unit tests with mocks, use @ExtendWith(MockitoExtension::class)

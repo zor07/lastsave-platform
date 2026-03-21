@@ -11,6 +11,7 @@ import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepository
 import com.zor07.lastsave.service.bot.TelegramBot
+import com.zor07.lastsave.service.progress.BlockProgressService
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentMatchers.any
@@ -39,6 +40,9 @@ class MessageSchedulerServiceImplTest {
 
     @Mock
     private lateinit var studentProgressRepository: StudentProgressRepository
+
+    @Mock
+    private lateinit var blockProgressService: BlockProgressService
 
     @Mock
     private lateinit var telegramBot: TelegramBot
