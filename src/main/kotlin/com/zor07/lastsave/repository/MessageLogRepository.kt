@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface MessageLogRepository : JpaRepository<MessageLog, Long>
+interface MessageLogRepository : JpaRepository<MessageLog, Long> {
+    fun findFirstByStudentIdOrderBySentAtDesc(studentId: Long): MessageLog?
+    fun findFirstByStudentIdAndMessageIdOrderBySentAtDesc(studentId: Long, messageId: Long): MessageLog?
+}

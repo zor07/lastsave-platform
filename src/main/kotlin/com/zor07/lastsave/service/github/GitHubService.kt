@@ -14,13 +14,12 @@ class GitHubService(
     @Qualifier("gitHubRestTemplate")
     private val restTemplate: RestTemplate,
     @Value("\${github.token}") private val token: String,
-    @Value("\${github.template-repo}") private val templateRepo: String,
     @Value("\${github.org}") private val org: String,
 ) {
 
-    fun createRepoFromTemplate(githubUsername: String): String {
-        val repoName = "${githubUsername}-course"
-        val url = "https://api.github.com/repos/$org/$templateRepo/generate"
+    fun createRepoFromTemplate(templateRepoUrl: String, repoName: String): String {
+        val (templateOwner, templateName) = parseTemplate(templateRepoUrl)
+        val url = "https://api.github.com/repos/$templateOwner/$templateName/generate"
         val headers = authHeaders().apply {
             add("Accept", "application/vnd.github.baptiste-preview+json")
         }
@@ -46,4 +45,13 @@ class GitHubService(
             contentType = MediaType.APPLICATION_JSON
             add(HttpHeaders.AUTHORIZATION, "Bearer $token")
         }
+
+    private fun parseTemplate(templateRepoUrl: String): Pair<String, String> {
+        val cleaned = templateRepoUrl.removeSuffix(".git")
+        val parts = cleaned.substringAfter("github.com/").split("/")
+        if (parts.size < 2) {
+            throw IllegalArgumentException("Invalid template repo url: $templateRepoUrl")
+        }
+        return parts[0] to parts[1]
+    }
 }

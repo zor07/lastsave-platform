@@ -17,7 +17,6 @@ spring:
 
 github:
   token: ${GITHUB_TOKEN}
-  template-repo: ${GITHUB_TEMPLATE_REPO}
   org: ${GITHUB_ORG}
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}

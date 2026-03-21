@@ -1,18 +1,16 @@
 package com.zor07.lastsave.service.auth
 
-import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.github.GitHubOAuthClient
-import com.zor07.lastsave.service.github.GitHubService
 import com.zor07.lastsave.service.student.StudentService
+import com.zor07.lastsave.service.progress.BlockProgressService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
 @Service
 class GitHubOAuthServiceImpl(
     private val studentService: StudentService,
-    private val gitHubService: GitHubService,
-    private val telegramBot: TelegramBot,
     private val gitHubOAuthClient: GitHubOAuthClient,
+    private val blockProgressService: BlockProgressService,
 ) : GitHubOAuthService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -30,10 +28,8 @@ class GitHubOAuthServiceImpl(
             githubName = user.name,
         )
 
-        val repoUrl = gitHubService.createRepoFromTemplate(student.githubUsername)
-        gitHubService.addCollaborator(repoUrl.substringAfterLast("/"), student.githubUsername)
-        telegramBot.sendRepoLink(chatId, repoUrl)
+        blockProgressService.startFirstBlockIfNeeded(student)
 
-        logger.info("Registered student {} for chat {} and repo {}", student.id, chatId, repoUrl)
+        logger.info("Registered student {} for chat {}", student.id, chatId)
     }
 }

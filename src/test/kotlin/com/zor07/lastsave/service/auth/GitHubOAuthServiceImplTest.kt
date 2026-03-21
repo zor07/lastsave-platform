@@ -2,9 +2,8 @@ package com.zor07.lastsave.service.auth
 
 import com.zor07.lastsave.dto.github.GitHubUser
 import com.zor07.lastsave.entity.Student
-import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.github.GitHubOAuthClient
-import com.zor07.lastsave.service.github.GitHubService
+import com.zor07.lastsave.service.progress.BlockProgressService
 import com.zor07.lastsave.service.student.StudentService
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
@@ -23,19 +22,16 @@ class GitHubOAuthServiceImplTest {
     private lateinit var studentService: StudentService
 
     @Mock
-    private lateinit var gitHubService: GitHubService
-
-    @Mock
-    private lateinit var telegramBot: TelegramBot
-
-    @Mock
     private lateinit var gitHubOAuthClient: GitHubOAuthClient
+
+    @Mock
+    private lateinit var blockProgressService: BlockProgressService
 
     @InjectMocks
     private lateinit var service: GitHubOAuthServiceImpl
 
     @Test
-    fun `processCallback registers student and sends repo link`() {
+    fun `processCallback registers student`() {
         val code = "code"
         val state = "123"
         val token = "token"
@@ -50,12 +46,11 @@ class GitHubOAuthServiceImplTest {
         given(gitHubOAuthClient.exchangeCodeForToken(code)).willReturn(token)
         given(gitHubOAuthClient.fetchUser(token)).willReturn(user)
         given(studentService.registerStudent(123L, "octocat", "Octo Cat")).willReturn(student)
-        given(gitHubService.createRepoFromTemplate("octocat")).willReturn("https://github.com/org/repo")
 
         service.processCallback(code, state)
 
-        verify(gitHubService).addCollaborator("repo", "octocat")
-        verify(telegramBot).sendRepoLink(123L, "https://github.com/org/repo")
+        verify(studentService).registerStudent(123L, "octocat", "Octo Cat")
+        verify(blockProgressService).startFirstBlockIfNeeded(student)
     }
 
     @Test
@@ -64,6 +59,6 @@ class GitHubOAuthServiceImplTest {
             service.processCallback("code", "invalid")
         }
 
-        verifyNoInteractions(gitHubOAuthClient, studentService, gitHubService, telegramBot)
+        verifyNoInteractions(gitHubOAuthClient, studentService)
     }
 }

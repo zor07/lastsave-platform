@@ -23,7 +23,6 @@ services:
       DB_USER: ${DB_USER:-lastsave}
       DB_PASSWORD: ${DB_PASSWORD:-lastsave}
       GITHUB_TOKEN: ${GITHUB_TOKEN:-changeme}
-      GITHUB_TEMPLATE_REPO: ${GITHUB_TEMPLATE_REPO:-org/template}
       GITHUB_ORG: ${GITHUB_ORG:-org}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-token}
       TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-botname}
