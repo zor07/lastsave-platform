@@ -1,5 +1,7 @@
 package com.zor07.lastsave.student
 
+import com.zor07.lastsave.repository.StudentRepository
+import com.zor07.lastsave.service.StudentService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
