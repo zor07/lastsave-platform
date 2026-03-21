@@ -28,6 +28,7 @@ Structure: layered (controllers, services, repositories, entities, dto)
 
 ## VCS 
 - Always do `git add` for every new file you create
+- At the end always propose a commit message that would fit to changes you've made
 
 ## Build & Test
 ./gradlew build
