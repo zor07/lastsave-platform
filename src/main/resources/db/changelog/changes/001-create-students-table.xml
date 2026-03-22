@@ -17,9 +17,6 @@
             <column name="github_username" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="github_name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="created_at" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>

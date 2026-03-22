@@ -17,23 +17,28 @@ class GitHubService(
     @Value("\${github.org}") private val org: String,
 ) {
 
-    fun createRepoFromTemplate(templateRepoUrl: String, repoName: String): String {
-        val (templateOwner, templateName) = parseTemplate(templateRepoUrl)
-        val url = "https://api.github.com/repos/$templateOwner/$templateName/generate"
+    fun createRepoFromTemplate(
+        templateRepoName: String,
+        collaboratorGithubUsername: String
+    ): String {
+        val newRepoName = "$templateRepoName-$collaboratorGithubUsername"
+        val url = "https://api.github.com/repos/$org/$templateRepoName/generate"
+
         val headers = authHeaders().apply {
             add("Accept", "application/vnd.github.baptiste-preview+json")
         }
         val body = mapOf(
             "owner" to org,
-            "name" to repoName,
+            "name" to newRepoName,
             "private" to true,
         )
         val request = HttpEntity(body, headers)
         restTemplate.postForEntity(url, request, Map::class.java)
-        return "https://github.com/$org/$repoName"
+        addCollaborator(newRepoName, collaboratorGithubUsername)
+        return "https://github.com/$org/$newRepoName"
     }
 
-    fun addCollaborator(repoName: String, githubUsername: String) {
+    private fun addCollaborator(repoName: String, githubUsername: String) {
         val url = "https://api.github.com/repos/$org/$repoName/collaborators/$githubUsername"
         val headers = authHeaders()
         val request = HttpEntity(emptyMap<String, Any>(), headers)
@@ -45,13 +50,4 @@ class GitHubService(
             contentType = MediaType.APPLICATION_JSON
             add(HttpHeaders.AUTHORIZATION, "Bearer $token")
         }
-
-    private fun parseTemplate(templateRepoUrl: String): Pair<String, String> {
-        val cleaned = templateRepoUrl.removeSuffix(".git")
-        val parts = cleaned.substringAfter("github.com/").split("/")
-        if (parts.size < 2) {
-            throw IllegalArgumentException("Invalid template repo url: $templateRepoUrl")
-        }
-        return parts[0] to parts[1]
-    }
 }

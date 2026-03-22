@@ -18,7 +18,6 @@ class StudentServiceImpl(
         val student = Student(
             telegramChatId = telegramChatId,
             githubUsername = githubUsername,
-            githubName = githubName,
         )
         return studentRepository.save(student)
     }

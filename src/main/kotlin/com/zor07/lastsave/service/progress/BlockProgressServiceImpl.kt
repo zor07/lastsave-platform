@@ -48,9 +48,7 @@ class BlockProgressServiceImpl(
     private fun startBlock(student: Student, block: Block): BlockStartResult? {
         val blockId = block.id ?: return null
         val firstSection = getFirstSection(blockId) ?: return null
-        val repoName = "${student.githubUsername}-${slug(block.title)}"
-        val repoUrl = gitHubService.createRepoFromTemplate(block.templateRepoUrl, repoName)
-        gitHubService.addCollaborator(repoName, student.githubUsername)
+        val repoUrl = gitHubService.createRepoFromTemplate(block.templateRepoName, student.githubUsername)
 
         val progress = StudentProgress(
             studentId = student.id ?: return null,

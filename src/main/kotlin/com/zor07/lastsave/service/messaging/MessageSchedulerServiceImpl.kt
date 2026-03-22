@@ -36,6 +36,7 @@ class MessageSchedulerServiceImpl(
     }
 
     private fun processStudent(student: Student) {
+        logger.info("Processing student ${student.id}")
         val activeProgress = ensureActiveProgress(student) ?: return
         val sectionId = activeProgress.sectionId
 

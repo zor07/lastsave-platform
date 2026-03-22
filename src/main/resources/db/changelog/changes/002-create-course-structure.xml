@@ -26,7 +26,7 @@
             <column name="title" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="template_repo_url" type="VARCHAR(255)">
+            <column name="template_repo_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="order" type="INT">

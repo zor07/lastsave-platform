@@ -20,8 +20,8 @@ data class Block(
     @Column(name = "title", nullable = false)
     val title: String,
 
-    @Column(name = "template_repo_url", nullable = false)
-    val templateRepoUrl: String,
+    @Column(name = "template_repo_name", nullable = false)
+    val templateRepoName: String,
 
     @Column(name = "\"order\"", nullable = false)
     val order: Int,

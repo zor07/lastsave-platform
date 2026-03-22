@@ -21,9 +21,6 @@ data class Student(
     @Column(name = "github_username", nullable = false, unique = true)
     val githubUsername: String,
 
-    @Column(name = "github_name", nullable = false)
-    val githubName: String,
-
     @Column(name = "created_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT NOW()")
     val createdAt: LocalDateTime = LocalDateTime.now(),
 )
