@@ -65,11 +65,4 @@ class BlockProgressServiceImpl(
         val topic = topicRepository.findFirstByBlockIdOrderByOrderAsc(blockId) ?: return null
         return sectionRepository.findFirstByTopicIdOrderByOrderAsc(topic.id ?: return null)
     }
-
-    private fun slug(title: String): String {
-        val lowered = title.lowercase(Locale.getDefault())
-        val dashed = lowered.replace("\\s+".toRegex(), "-")
-        val sanitized = dashed.replace("[^a-z0-9-]".toRegex(), "")
-        return sanitized.ifBlank { "course" }
-    }
 }
