@@ -3,10 +3,38 @@ package com.zor07.lastsave.repository
 import com.zor07.lastsave.entity.StudentProgress
 import com.zor07.lastsave.entity.enums.StudentProgressStatus
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
 interface StudentProgressRepository : JpaRepository<StudentProgress, Long> {
-    fun findFirstByStudentIdAndStatusOrderByStartedAtDesc(studentId: Long, status: StudentProgressStatus): StudentProgress?
-    fun findByStudentIdAndSectionId(studentId: Long, sectionId: Long): StudentProgress?
+    @Query(
+        value = """
+            select * from student_progress
+            where student_id = :studentId
+              and status = :status
+            order by started_at desc
+            limit 1
+        """,
+        nativeQuery = true,
+    )
+    fun findFirstByStudentIdAndStatusOrderByStartedAtDesc(
+        @Param("studentId") studentId: Long,
+        @Param("status") status: StudentProgressStatus,
+    ): StudentProgress?
+
+    @Query(
+        value = """
+            select * from student_progress
+            where student_id = :studentId
+              and section_id = :sectionId
+            limit 1
+        """,
+        nativeQuery = true,
+    )
+    fun findByStudentIdAndSectionId(
+        @Param("studentId") studentId: Long,
+        @Param("sectionId") sectionId: Long,
+    ): StudentProgress?
 }
