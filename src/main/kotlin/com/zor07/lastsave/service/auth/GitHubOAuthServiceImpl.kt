@@ -27,7 +27,6 @@ class GitHubOAuthServiceImpl(
         val student = studentService.registerStudent(
             telegramChatId = chatId,
             githubUsername = user.username,
-            githubName = user.name,
         )
 
         studentProgressService.startFirstBlockIfNeeded(student)?.let {
