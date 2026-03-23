@@ -1,6 +1,7 @@
 package com.zor07.lastsave.service.bot
 
 import com.zor07.lastsave.service.messaging.MessageCallbackService
+import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -17,6 +18,7 @@ import jakarta.annotation.PostConstruct
 @Component
 class TelegramBot(
     private val messageCallbackService: MessageCallbackService,
+    private val studentService: StudentService,
     @Value("\${telegram.bot.token}") private val token: String,
     @Value("\${telegram.bot.username}") private val username: String,
     @Value("\${github.client-id}") private val githubClientId: String,
@@ -38,9 +40,8 @@ class TelegramBot(
         safeUpdate.callbackQuery?.let { callback ->
             val chatId = requireNotNull(callback.message?.chatId) { "Callback chatId is required" }
             val messageId = requireNotNull(callback.data?.toLongOrNull()) { "Callback data must contain message id" }
-            val blockStart = messageCallbackService.handleCallback(chatId, messageId)
-            blockStart?.let { sendRepoLink(chatId, it.repoUrl!!, it.blockTitle!!) }
-            answerCallback(callback.id)
+            messageCallbackService.handleCallback(chatId, messageId)
+            answerCallback(callback.id, "Спасибо! Продолжаем.")
         }
     }
 
@@ -68,9 +69,9 @@ class TelegramBot(
         }
     }
 
-    fun answerCallback(callbackQueryId: String) {
+    fun answerCallback(callbackQueryId: String, text: String? = null) {
         try {
-            execute(AnswerCallbackQuery(callbackQueryId))
+            execute(AnswerCallbackQuery(callbackQueryId).apply { this.text = text })
         } catch (ex: Exception) {
             logger.error("Failed to answer callback", ex)
         }
@@ -79,6 +80,11 @@ class TelegramBot(
     private fun handleMessage(message: org.telegram.telegrambots.meta.api.objects.Message) {
         if (message.isCommand && message.text == "/start") {
             val chatId = message.chatId
+            val existing = studentService.findByTelegramChatId(chatId)
+            if (existing != null) {
+                sendTextMessage(chatId, "Ты уже зарегистрирован, GitHub username: ${existing.githubUsername}.")
+                return
+            }
             val url =
                 "https://github.com/login/oauth/authorize?client_id=$githubClientId&state=$chatId&redirect_uri=${appBaseUrl}/auth/github/callback"
             sendTextMessage(chatId, "Привет! Авторизуйся через GitHub: $url")
