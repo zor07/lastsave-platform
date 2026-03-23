@@ -33,11 +33,11 @@ class TelegramBot(
     override fun getBotUsername(): String = username
 
     override fun onUpdateReceived(update: Update?) {
-        update ?: return
-        update.message?.let { handleMessage(it) }
-        update.callbackQuery?.let { callback ->
-            val chatId = callback.message?.chatId ?: return
-            val messageId = callback.data?.toLongOrNull() ?: return
+        val safeUpdate = requireNotNull(update) { "Update must not be null" }
+        safeUpdate.message?.let { handleMessage(it) }
+        safeUpdate.callbackQuery?.let { callback ->
+            val chatId = requireNotNull(callback.message?.chatId) { "Callback chatId is required" }
+            val messageId = requireNotNull(callback.data?.toLongOrNull()) { "Callback data must contain message id" }
             val blockStart = messageCallbackService.handleCallback(chatId, messageId)
             blockStart?.let { sendRepoLink(chatId, it.repoUrl, it.blockTitle) }
             answerCallback(callback.id)

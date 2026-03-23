@@ -25,41 +25,45 @@ class MessageCallbackServiceImpl(
 ) : MessageCallbackService {
 
     override fun handleCallback(chatId: Long, messageId: Long): BlockStartResult? {
-        val student = studentRepository.findByTelegramChatId(chatId) ?: return null
-        val message = messageRepository.findById(messageId).orElse(null) ?: return null
+        val student = studentRepository.findByTelegramChatId(chatId)
+            ?: throw IllegalStateException("Student not found for chat $chatId")
+        val message = messageRepository.findById(messageId).orElse(null)
+            ?: throw IllegalStateException("Message $messageId not found")
 
-        markCallbackReceived(student.id ?: return null, messageId)
+        markCallbackReceived(requireNotNull(student.id) { "Student id is required" }, messageId)
         completeCurrentSection(student.id, message.sectionId)
         return progressToNextSectionOrBlock(student.id, message.sectionId)
     }
 
     private fun markCallbackReceived(studentId: Long, messageId: Long) {
         val log = messageLogRepository.findFirstByStudentIdAndMessageIdOrderBySentAtDesc(studentId, messageId)
-            ?: return
-        val updated = log.copy(callbackReceivedAt = LocalDateTime.now())
-        messageLogRepository.save(updated)
+            ?: throw IllegalStateException("Message log not found for student $studentId and message $messageId")
+        messageLogRepository.save(log.copy(callbackReceivedAt = LocalDateTime.now()))
     }
 
     private fun completeCurrentSection(studentId: Long, sectionId: Long) {
-        val progress = studentProgressRepository.findByStudentIdAndSectionId(studentId, sectionId) ?: return
+        val progress = studentProgressRepository.findByStudentIdAndSectionId(studentId, sectionId)
+            ?: throw IllegalStateException("Student progress not found for student $studentId section $sectionId")
         val updated = progress.copy(status = StudentProgressStatus.COMPLETED, completedAt = LocalDateTime.now())
         studentProgressRepository.save(updated)
     }
 
     private fun progressToNextSectionOrBlock(studentId: Long, currentSectionId: Long): BlockStartResult? {
-        val currentSection = sectionRepository.findById(currentSectionId).orElse(null) ?: return null
+        val currentSection = sectionRepository.findById(currentSectionId).orElse(null)
+            ?: throw IllegalStateException("Section $currentSectionId not found")
         val nextSection = findNextSection(currentSection)
         if (nextSection != null) {
             val progress = StudentProgress(
                 studentId = studentId,
-                sectionId = nextSection.id ?: return null,
+                sectionId = requireNotNull(nextSection.id) { "Next section id is required" },
                 status = StudentProgressStatus.IN_PROGRESS,
                 startedAt = LocalDateTime.now(),
             )
             studentProgressRepository.save(progress)
             return null
         } else {
-            val student = studentRepository.findById(studentId).orElse(null) ?: return null
+            val student = studentRepository.findById(studentId).orElse(null)
+                ?: throw IllegalStateException("Student $studentId not found")
             return blockProgressService.startNextBlockIfExists(student, currentSection)
         }
     }
@@ -72,9 +76,14 @@ class MessageCallbackServiceImpl(
         if (nextInTopic != null) {
             return nextInTopic
         }
-        val topic = topicRepository.findById(currentSection.topicId).orElse(null) ?: return null
+        val topic = topicRepository.findById(currentSection.topicId).orElse(null)
+            ?: throw IllegalStateException("Topic ${currentSection.topicId} not found")
         val nextTopic = topicRepository.findFirstByBlockIdAndOrderGreaterThanOrderByOrderAsc(topic.blockId, topic.order)
-            ?: return null
-        return sectionRepository.findFirstByTopicIdOrderByOrderAsc(nextTopic.id ?: return null)
+        if (nextTopic == null) {
+            return null
+        }
+        val nextTopicId = requireNotNull(nextTopic.id) { "Next topic id is required" }
+        return sectionRepository.findFirstByTopicIdOrderByOrderAsc(nextTopicId)
+            ?: throw IllegalStateException("No sections for topic $nextTopicId")
     }
 }

@@ -37,10 +37,11 @@ class MessageSchedulerServiceImpl(
 
     private fun processStudent(student: Student) {
         logger.info("Processing student ${student.id}")
-        val activeProgress = ensureActiveProgress(student) ?: return
+        val activeProgress = ensureActiveProgress(student)
         val sectionId = activeProgress.sectionId
 
-        val lastLog = messageLogRepository.findFirstByStudentIdOrderBySentAtDesc(student.id ?: return)
+        val studentId = requireNotNull(student.id) { "Student id is required" }
+        val lastLog = messageLogRepository.findFirstByStudentIdOrderBySentAtDesc(studentId)
         val lastMessage = lastLog?.let { messageRepository.findById(it.messageId).orElse(null) }
 
         if (lastLog == null || lastMessage == null || lastMessage.sectionId != sectionId) {
@@ -55,14 +56,14 @@ class MessageSchedulerServiceImpl(
         val nextMessage = messageRepository.findFirstBySectionIdAndOrderGreaterThanOrderByOrderAsc(
             lastMessage.sectionId,
             lastMessage.order,
-        ) ?: return
+        ) ?: throw IllegalStateException("Next message not found for section ${lastMessage.sectionId}")
 
         sendMessage(nextMessage, student)
     }
 
-    private fun ensureActiveProgress(student: Student): com.zor07.lastsave.entity.StudentProgress? {
+    private fun ensureActiveProgress(student: Student): com.zor07.lastsave.entity.StudentProgress {
         val active = studentProgressRepository.findFirstByStudentIdAndStatusOrderByStartedAtDesc(
-            student.id ?: return null,
+            requireNotNull(student.id) { "Student id is required" },
             StudentProgressStatus.IN_PROGRESS,
         )
         if (active != null) {
@@ -72,17 +73,18 @@ class MessageSchedulerServiceImpl(
         started?.let {
             telegramBot.sendRepoLink(student.telegramChatId, it.repoUrl, it.blockTitle)
         }
-        return started?.progress
+        return requireNotNull(started?.progress) { "Failed to start first block for student ${student.id}" }
     }
 
     private fun sendFirstMessageOfSection(sectionId: Long, student: Student) {
-        val message = messageRepository.findFirstBySectionIdOrderByOrderAsc(sectionId) ?: return
+        val message = messageRepository.findFirstBySectionIdOrderByOrderAsc(sectionId)
+            ?: throw IllegalStateException("No messages for section $sectionId")
         sendMessage(message, student)
     }
 
     private fun sendMessage(message: Message, student: Student) {
         val chatId = student.telegramChatId
-        val messageId = message.id ?: return
+        val messageId = requireNotNull(message.id) { "Message id is required" }
         if (message.waitFor == MessageWaitFor.CALLBACK && !message.callbackText.isNullOrBlank()) {
             telegramBot.sendMessageWithButton(chatId, message.text, message.callbackText, messageId.toString())
         } else {
@@ -91,7 +93,7 @@ class MessageSchedulerServiceImpl(
         messageLogRepository.save(
             MessageLog(
                 messageId = messageId,
-                studentId = student.id ?: return,
+                studentId = requireNotNull(student.id) { "Student id is required" },
                 sentAt = LocalDateTime.now(),
                 callbackReceivedAt = null,
             ),
