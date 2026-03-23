@@ -53,7 +53,7 @@ class MessageSchedulerServiceImpl(
             return
         }
 
-        val nextMessage = messageRepository.findFirstBySectionIdAndOrderGreaterThanOrderByOrderAsc(
+        val nextMessage = messageRepository.findNextMessageToSend(
             lastMessage.sectionId,
             lastMessage.order,
         ) ?: throw IllegalStateException("Next message not found for section ${lastMessage.sectionId}")

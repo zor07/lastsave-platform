@@ -39,7 +39,7 @@ class TelegramBot(
             val chatId = requireNotNull(callback.message?.chatId) { "Callback chatId is required" }
             val messageId = requireNotNull(callback.data?.toLongOrNull()) { "Callback data must contain message id" }
             val blockStart = messageCallbackService.handleCallback(chatId, messageId)
-            blockStart?.let { sendRepoLink(chatId, it.repoUrl, it.blockTitle) }
+            blockStart?.let { sendRepoLink(chatId, it.repoUrl!!, it.blockTitle!!) }
             answerCallback(callback.id)
         }
     }

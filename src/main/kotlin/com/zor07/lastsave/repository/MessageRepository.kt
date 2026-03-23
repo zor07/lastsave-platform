@@ -29,7 +29,7 @@ interface MessageRepository : JpaRepository<Message, Long> {
         """,
         nativeQuery = true,
     )
-    fun findFirstBySectionIdAndOrderGreaterThanOrderByOrderAsc(
+    fun findNextMessageToSend(
         @Param("sectionId") sectionId: Long,
         @Param("orderVal") order: Int,
     ): Message?
