@@ -5,12 +5,14 @@ import com.zor07.lastsave.entity.Section
 import com.zor07.lastsave.entity.Student
 import com.zor07.lastsave.entity.StudentProgress
 import com.zor07.lastsave.entity.enums.StudentProgressStatus
+import com.zor07.lastsave.event.BlockStartedEvent
 import com.zor07.lastsave.repository.BlockRepository
 import com.zor07.lastsave.repository.SectionRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.TopicRepository
 import com.zor07.lastsave.service.github.GitHubService
 import org.slf4j.LoggerFactory
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -21,6 +23,7 @@ class StudentProgressServiceImpl(
     private val sectionRepository: SectionRepository,
     private val studentProgressRepository: StudentProgressRepository,
     private val gitHubService: GitHubService,
+    private val eventPublisher: ApplicationEventPublisher,
 ) : StudentProgressService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -103,6 +106,7 @@ class StudentProgressServiceImpl(
             startedAt = LocalDateTime.now(),
         )
         val saved = studentProgressRepository.save(progress)
+        eventPublisher.publishEvent(BlockStartedEvent(student, repoUrl, block.title))
         logger.info("Started block {} for student {}", blockId, student.id)
         return BlockStartResult(progress = saved, repoUrl = repoUrl, blockTitle = block.title)
     }
