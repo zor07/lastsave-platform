@@ -3,8 +3,8 @@ package com.zor07.lastsave.service.messaging
 import com.zor07.lastsave.entity.Message
 import com.zor07.lastsave.entity.MessageLog
 import com.zor07.lastsave.entity.Student
+import com.zor07.lastsave.entity.StudentProgress
 import com.zor07.lastsave.entity.enums.MessageWaitFor
-import com.zor07.lastsave.entity.enums.StudentProgressStatus
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
@@ -37,7 +37,7 @@ class MessageSchedulerServiceImpl(
 
     private fun processStudent(student: Student) {
         logger.info("Processing student ${student.id}")
-        val activeProgress = ensureActiveProgress(student)
+        val activeProgress = getOrStartProgress(student)
         val sectionId = activeProgress.sectionId
 
         val studentId = requireNotNull(student.id) { "Student id is required" }
@@ -61,19 +61,15 @@ class MessageSchedulerServiceImpl(
         sendMessage(nextMessage, student)
     }
 
-    private fun ensureActiveProgress(student: Student): com.zor07.lastsave.entity.StudentProgress {
-        val active = studentProgressRepository.findFirstByStudentIdAndStatusOrderByStartedAtDesc(
-            requireNotNull(student.id) { "Student id is required" },
-            StudentProgressStatus.IN_PROGRESS,
-        )
-        if (active != null) {
-            return active
+    private fun getOrStartProgress(student: Student): StudentProgress {
+        val result = studentProgressService.getOrStartProgress(student)
+            ?: throw IllegalStateException("Failed to ensure progress for student ${student.id}")
+        result.repoUrl?.let { repoUrl ->
+            result.blockTitle?.let { blockTitle ->
+                telegramBot.sendRepoLink(student.telegramChatId, repoUrl, blockTitle)
+            }
         }
-        val started = studentProgressService.startFirstBlockIfNeeded(student)
-        started?.let {
-            telegramBot.sendRepoLink(student.telegramChatId, it.repoUrl, it.blockTitle)
-        }
-        return requireNotNull(started?.progress) { "Failed to start first block for student ${student.id}" }
+        return result.progress
     }
 
     private fun sendFirstMessageOfSection(sectionId: Long, student: Student) {

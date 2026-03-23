@@ -6,11 +6,12 @@ import com.zor07.lastsave.entity.StudentProgress
 
 data class BlockStartResult(
     val progress: StudentProgress,
-    val repoUrl: String,
-    val blockTitle: String,
+    val repoUrl: String? = null,
+    val blockTitle: String? = null,
 )
 
 interface StudentProgressService {
+    fun getOrStartProgress(student: Student): BlockStartResult?
     fun startFirstBlockIfNeeded(student: Student): BlockStartResult?
     fun startNextBlockIfExists(student: Student, currentSection: Section): BlockStartResult?
     fun completeSectionAndAdvance(student: Student, currentSectionId: Long): BlockStartResult?
