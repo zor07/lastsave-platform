@@ -28,16 +28,16 @@ class StudentProgressServiceImpl(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun getOrStartProgress(student: Student): BlockStartResult? {
+    override fun getOrStartProgress(student: Student): StudentProgress {
         val studentId = requireNotNull(student.id) { "Student id is required" }
         val activeProgress = studentProgressRepository.findFirstByStudentIdAndStatusOrderByStartedAtDesc(
             studentId,
             StudentProgressStatus.IN_PROGRESS,
         )
         if (activeProgress != null) {
-            return BlockStartResult(progress = activeProgress)
+            return activeProgress
         }
-        return startFirstBlockIfNeeded(student)
+        return startFirstBlockIfNeeded(student)?.progress!!
     }
 
     override fun startFirstBlockIfNeeded(student: Student): BlockStartResult? {

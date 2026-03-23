@@ -37,7 +37,7 @@ class MessageSchedulerServiceImpl(
 
     private fun processStudent(student: Student) {
         logger.info("Processing student ${student.id}")
-        val activeProgress = getOrStartProgress(student)
+        val activeProgress = studentProgressService.getOrStartProgress(student)
         val sectionId = activeProgress.sectionId
 
         val studentId = requireNotNull(student.id) { "Student id is required" }
@@ -59,17 +59,6 @@ class MessageSchedulerServiceImpl(
         ) ?: throw IllegalStateException("Next message not found for section ${lastMessage.sectionId}")
 
         sendMessage(nextMessage, student)
-    }
-
-    private fun getOrStartProgress(student: Student): StudentProgress {
-        val result = studentProgressService.getOrStartProgress(student)
-            ?: throw IllegalStateException("Failed to ensure progress for student ${student.id}")
-        result.repoUrl?.let { repoUrl ->
-            result.blockTitle?.let { blockTitle ->
-                telegramBot.sendRepoLink(student.telegramChatId, repoUrl, blockTitle)
-            }
-        }
-        return result.progress
     }
 
     private fun sendFirstMessageOfSection(sectionId: Long, student: Student) {

@@ -11,7 +11,7 @@ data class BlockStartResult(
 )
 
 interface StudentProgressService {
-    fun getOrStartProgress(student: Student): BlockStartResult?
+    fun getOrStartProgress(student: Student): StudentProgress
     fun startFirstBlockIfNeeded(student: Student): BlockStartResult?
     fun startNextBlockIfExists(student: Student, currentSection: Section): BlockStartResult?
     fun completeSectionAndAdvance(student: Student, currentSectionId: Long): BlockStartResult?
