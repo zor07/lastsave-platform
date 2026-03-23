@@ -11,7 +11,7 @@ class StudentServiceImpl(
 ) : StudentService {
 
     @Transactional
-    override fun registerStudent(telegramChatId: Long, githubUsername: String, githubName: String): Student {
+    override fun registerStudent(telegramChatId: Long, githubUsername: String): Student {
         studentRepository.findByTelegramChatId(telegramChatId)?.let { return it }
         studentRepository.findByGithubUsername(githubUsername)?.let { return it }
 

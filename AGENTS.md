@@ -1,5 +1,7 @@
 # AGENTS.md
 
+## Do not write or modify tests !!! Project is being refactored. TESTS WILL BE UPDATED LATER. If you see this do not modify tests
+
 ## Project
 Kotlin + Spring Boot 3 + PostgreSQL + Liquibase + JPA
 Package: com.zor07.lastsave
