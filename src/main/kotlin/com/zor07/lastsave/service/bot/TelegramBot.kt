@@ -45,10 +45,6 @@ class TelegramBot(
         }
     }
 
-    fun sendRepoLink(chatId: Long, repoUrl: String, blockTitle: String) {
-        sendTextMessage(chatId, "Новый спринт! Сосредоточимся на «$blockTitle». Твой репозиторий для работы: $repoUrl")
-    }
-
     fun sendTextMessage(chatId: Long, text: String) {
         try {
             execute(SendMessage(chatId.toString(), text))

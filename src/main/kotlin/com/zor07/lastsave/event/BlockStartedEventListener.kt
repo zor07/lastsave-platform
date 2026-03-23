@@ -12,6 +12,6 @@ class BlockStartedEventListener(
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onBlockStarted(event: BlockStartedEvent) {
-        telegramBot.sendRepoLink(event.student.telegramChatId, event.repoUrl, event.blockTitle)
+        telegramBot.sendTextMessage(event.student.telegramChatId, "Новый спринт! Сосредоточимся на «${event.blockTitle}». Твой репозиторий для работы: ${event.repoUrl}")
     }
 }
