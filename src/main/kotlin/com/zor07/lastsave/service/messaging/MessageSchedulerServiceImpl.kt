@@ -10,7 +10,7 @@ import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepository
 import com.zor07.lastsave.service.bot.TelegramBot
-import com.zor07.lastsave.service.progress.BlockProgressService
+import com.zor07.lastsave.service.progress.StudentProgressService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -22,7 +22,7 @@ class MessageSchedulerServiceImpl(
     private val messageRepository: MessageRepository,
     private val messageLogRepository: MessageLogRepository,
     private val studentProgressRepository: StudentProgressRepository,
-    private val blockProgressService: BlockProgressService,
+    private val studentProgressService: StudentProgressService,
     private val telegramBot: TelegramBot,
 ) : MessageSchedulerService {
 
@@ -69,7 +69,7 @@ class MessageSchedulerServiceImpl(
         if (active != null) {
             return active
         }
-        val started = blockProgressService.startFirstBlockIfNeeded(student)
+        val started = studentProgressService.startFirstBlockIfNeeded(student)
         started?.let {
             telegramBot.sendRepoLink(student.telegramChatId, it.repoUrl, it.blockTitle)
         }

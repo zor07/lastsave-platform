@@ -2,21 +2,16 @@ package com.zor07.lastsave.service.messaging
 
 import com.zor07.lastsave.entity.Message
 import com.zor07.lastsave.entity.MessageLog
-import com.zor07.lastsave.entity.Section
 import com.zor07.lastsave.entity.Student
 import com.zor07.lastsave.entity.StudentProgress
-import com.zor07.lastsave.entity.Topic
 import com.zor07.lastsave.entity.enums.MessageSender
 import com.zor07.lastsave.entity.enums.MessageWaitFor
 import com.zor07.lastsave.entity.enums.StudentProgressStatus
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.MessageRepository
-import com.zor07.lastsave.repository.SectionRepository
-import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepository
-import com.zor07.lastsave.repository.TopicRepository
-import com.zor07.lastsave.service.progress.BlockProgressService
 import com.zor07.lastsave.service.progress.BlockStartResult
+import com.zor07.lastsave.service.progress.StudentProgressService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -43,16 +38,7 @@ class MessageCallbackServiceImplTest {
     private lateinit var messageLogRepository: MessageLogRepository
 
     @Mock
-    private lateinit var studentProgressRepository: StudentProgressRepository
-
-    @Mock
-    private lateinit var sectionRepository: SectionRepository
-
-    @Mock
-    private lateinit var topicRepository: TopicRepository
-
-    @Mock
-    private lateinit var blockProgressService: BlockProgressService
+    private lateinit var studentProgressService: StudentProgressService
 
     @InjectMocks
     private lateinit var service: MessageCallbackServiceImpl
@@ -75,21 +61,10 @@ class MessageCallbackServiceImplTest {
             sentAt = LocalDateTime.now().minusMinutes(1),
             callbackReceivedAt = null,
         )
-        val progress = StudentProgress(
-            id = 50L,
-            studentId = 1L,
-            sectionId = 200L,
-            status = StudentProgressStatus.IN_PROGRESS,
-        )
-        val currentSection = Section(id = 200L, topicId = 300L, title = "s", order = 1, unlockCondition = com.zor07.lastsave.entity.enums.SectionUnlockCondition.MANUAL)
-        val nextSection = Section(id = 201L, topicId = 300L, title = "s2", order = 2, unlockCondition = com.zor07.lastsave.entity.enums.SectionUnlockCondition.MANUAL)
-
         given(studentRepository.findByTelegramChatId(10L)).willReturn(student)
         given(messageRepository.findById(100L)).willReturn(Optional.of(message))
         given(messageLogRepository.findFirstByStudentIdAndMessageIdOrderBySentAtDesc(1L, 100L)).willReturn(messageLog)
-        given(studentProgressRepository.findByStudentIdAndSectionId(1L, 200L)).willReturn(progress)
-        given(sectionRepository.findById(200L)).willReturn(Optional.of(currentSection))
-        given(sectionRepository.findFirstByTopicIdAndOrderGreaterThanOrderByOrderAsc(300L, 1)).willReturn(nextSection)
+        given(studentProgressService.completeSectionAndAdvance(student, 200L)).willReturn(null)
 
         val result = service.handleCallback(10L, 100L)
 
@@ -97,14 +72,8 @@ class MessageCallbackServiceImplTest {
         verify(messageLogRepository).save(logCaptor.capture())
         assertThat(logCaptor.value.callbackReceivedAt).isNotNull
 
-        val progressCaptor = ArgumentCaptor.forClass(StudentProgress::class.java)
-        verify(studentProgressRepository, org.mockito.Mockito.times(2)).save(progressCaptor.capture())
-        val savedProgresses = progressCaptor.allValues
-        assertThat(savedProgresses.any { it.status == StudentProgressStatus.COMPLETED }).isTrue()
-        assertThat(savedProgresses.any { it.sectionId == 201L && it.status == StudentProgressStatus.IN_PROGRESS }).isTrue()
-
         assertThat(result).isNull()
-        verifyNoInteractions(blockProgressService)
+        verify(studentProgressService).completeSectionAndAdvance(student, 200L)
     }
 
     @Test
@@ -125,28 +94,17 @@ class MessageCallbackServiceImplTest {
             sentAt = LocalDateTime.now().minusMinutes(1),
             callbackReceivedAt = null,
         )
-        val progress = StudentProgress(
-            id = 50L,
-            studentId = 1L,
-            sectionId = 200L,
-            status = StudentProgressStatus.IN_PROGRESS,
-        )
-        val currentSection = Section(id = 200L, topicId = 300L, title = "s", order = 2, unlockCondition = com.zor07.lastsave.entity.enums.SectionUnlockCondition.MANUAL)
-        val topic = Topic(id = 300L, blockId = 400L, title = "t", order = 2)
-
         given(studentRepository.findByTelegramChatId(10L)).willReturn(student)
         given(messageRepository.findById(100L)).willReturn(Optional.of(message))
         given(messageLogRepository.findFirstByStudentIdAndMessageIdOrderBySentAtDesc(1L, 100L)).willReturn(messageLog)
-        given(studentProgressRepository.findByStudentIdAndSectionId(1L, 200L)).willReturn(progress)
-        given(sectionRepository.findById(200L)).willReturn(Optional.of(currentSection))
-        given(topicRepository.findById(300L)).willReturn(Optional.of(topic))
-        given(sectionRepository.findFirstByTopicIdAndOrderGreaterThanOrderByOrderAsc(300L, 2)).willReturn(null)
-        given(topicRepository.findFirstByBlockIdAndOrderGreaterThanOrderByOrderAsc(400L, 2)).willReturn(null)
-        given(studentRepository.findById(1L)).willReturn(Optional.of(student))
-
-        given(blockProgressService.startNextBlockIfExists(student, currentSection)).willReturn(
+        given(studentProgressService.completeSectionAndAdvance(student, 200L)).willReturn(
             BlockStartResult(
-                progress = progress.copy(id = 99L, sectionId = 201L, status = StudentProgressStatus.IN_PROGRESS),
+                progress = StudentProgress(
+                    id = 99L,
+                    studentId = 1L,
+                    sectionId = 201L,
+                    status = StudentProgressStatus.IN_PROGRESS,
+                ),
                 repoUrl = "repo",
                 blockTitle = "block",
             ),
@@ -154,7 +112,7 @@ class MessageCallbackServiceImplTest {
 
         val result = service.handleCallback(10L, 100L)
 
-        verify(blockProgressService).startNextBlockIfExists(student, currentSection)
+        verify(studentProgressService).completeSectionAndAdvance(student, 200L)
         assertThat(result?.repoUrl).isEqualTo("repo")
     }
 }

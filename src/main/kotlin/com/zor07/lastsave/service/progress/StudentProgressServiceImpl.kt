@@ -15,13 +15,13 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class BlockProgressServiceImpl(
+class StudentProgressServiceImpl(
     private val blockRepository: BlockRepository,
     private val topicRepository: TopicRepository,
     private val sectionRepository: SectionRepository,
     private val studentProgressRepository: StudentProgressRepository,
     private val gitHubService: GitHubService,
-) : BlockProgressService {
+) : StudentProgressService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
@@ -48,7 +48,38 @@ class BlockProgressServiceImpl(
         return if (nextBlock != null) startBlock(student, nextBlock) else null
     }
 
-    private fun startBlock(student: Student, block: Block): BlockStartResult? {
+    override fun completeSectionAndAdvance(student: Student, currentSectionId: Long): BlockStartResult? {
+        val studentId = requireNotNull(student.id) { "Student id is required" }
+        markSectionCompleted(studentId, currentSectionId)
+
+        val currentSection = sectionRepository.findById(currentSectionId)
+            .orElseThrow { IllegalStateException("Section $currentSectionId not found") }
+        val nextSection = findNextSection(currentSection)
+        if (nextSection != null) {
+            val progress = StudentProgress(
+                studentId = studentId,
+                sectionId = requireNotNull(nextSection.id) { "Next section id is required" },
+                status = StudentProgressStatus.IN_PROGRESS,
+                startedAt = LocalDateTime.now(),
+            )
+            studentProgressRepository.save(progress)
+            return null
+        }
+
+        return startNextBlockIfExists(student, currentSection)
+    }
+
+    private fun markSectionCompleted(studentId: Long, sectionId: Long) {
+        val progress = studentProgressRepository.findByStudentIdAndSectionId(studentId, sectionId)
+            ?: throw IllegalStateException("Student progress not found for student $studentId section $sectionId")
+        val updated = progress.copy(
+            status = StudentProgressStatus.COMPLETED,
+            completedAt = LocalDateTime.now(),
+        )
+        studentProgressRepository.save(updated)
+    }
+
+    private fun startBlock(student: Student, block: Block): BlockStartResult {
         val blockId = requireNotNull(block.id) { "Block id is required" }
         val firstSection = getFirstSection(blockId)
         val repoUrl = gitHubService.createRepoFromTemplate(block.templateRepoName, student.githubUsername)
@@ -70,5 +101,22 @@ class BlockProgressServiceImpl(
         val topicId = requireNotNull(topic.id) { "Topic id is required" }
         return sectionRepository.findFirstByTopicIdOrderByOrderAsc(topicId)
             ?: throw IllegalStateException("No section for topic $topicId")
+    }
+
+    private fun findNextSection(currentSection: Section): Section? {
+        val nextInTopic = sectionRepository.findFirstByTopicIdAndOrderGreaterThanOrderByOrderAsc(
+            currentSection.topicId,
+            currentSection.order,
+        )
+        if (nextInTopic != null) {
+            return nextInTopic
+        }
+        val topic = topicRepository.findById(currentSection.topicId)
+            .orElseThrow { IllegalStateException("Topic ${currentSection.topicId} not found") }
+        val nextTopic = topicRepository.findFirstByBlockIdAndOrderGreaterThanOrderByOrderAsc(topic.blockId, topic.order)
+            ?: return null
+        val nextTopicId = requireNotNull(nextTopic.id) { "Next topic id is required" }
+        return sectionRepository.findFirstByTopicIdOrderByOrderAsc(nextTopicId)
+            ?: throw IllegalStateException("No sections for topic $nextTopicId")
     }
 }

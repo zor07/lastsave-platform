@@ -3,7 +3,7 @@ package com.zor07.lastsave.service.auth
 import com.zor07.lastsave.dto.github.GitHubUser
 import com.zor07.lastsave.entity.Student
 import com.zor07.lastsave.service.github.GitHubOAuthClient
-import com.zor07.lastsave.service.progress.BlockProgressService
+import com.zor07.lastsave.service.progress.StudentProgressService
 import com.zor07.lastsave.service.progress.BlockStartResult
 import com.zor07.lastsave.service.bot.TelegramBot
 import com.zor07.lastsave.service.student.StudentService
@@ -27,7 +27,7 @@ class GitHubOAuthServiceImplTest {
     private lateinit var gitHubOAuthClient: GitHubOAuthClient
 
     @Mock
-    private lateinit var blockProgressService: BlockProgressService
+    private lateinit var studentProgressService: StudentProgressService
 
     @Mock
     private lateinit var telegramBot: TelegramBot
@@ -57,7 +57,7 @@ class GitHubOAuthServiceImplTest {
             sectionId = 10L,
             status = com.zor07.lastsave.entity.enums.StudentProgressStatus.IN_PROGRESS,
         )
-        given(blockProgressService.startFirstBlockIfNeeded(student)).willReturn(
+        given(studentProgressService.startFirstBlockIfNeeded(student)).willReturn(
             BlockStartResult(
                 progress = progress,
                 repoUrl = "https://github.com/org/repo",
@@ -68,7 +68,7 @@ class GitHubOAuthServiceImplTest {
         service.processCallback(code, state)
 
         verify(studentService).registerStudent(123L, "octocat", "Octo Cat")
-        verify(blockProgressService).startFirstBlockIfNeeded(student)
+        verify(studentProgressService).startFirstBlockIfNeeded(student)
         verify(telegramBot).sendRepoLink(123L, "https://github.com/org/repo", "block")
     }
 

@@ -10,7 +10,8 @@ data class BlockStartResult(
     val blockTitle: String,
 )
 
-interface BlockProgressService {
+interface StudentProgressService {
     fun startFirstBlockIfNeeded(student: Student): BlockStartResult?
     fun startNextBlockIfExists(student: Student, currentSection: Section): BlockStartResult?
+    fun completeSectionAndAdvance(student: Student, currentSectionId: Long): BlockStartResult?
 }
