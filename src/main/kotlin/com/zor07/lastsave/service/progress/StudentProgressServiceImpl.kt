@@ -32,7 +32,7 @@ class StudentProgressServiceImpl(
         val studentId = requireNotNull(student.id) { "Student id is required" }
         val activeProgress = studentProgressRepository.findFirstByStudentIdAndStatusOrderByStartedAtDesc(
             studentId,
-            StudentProgressStatus.IN_PROGRESS,
+            StudentProgressStatus.IN_PROGRESS.name,
         )
         if (activeProgress != null) {
             return activeProgress
@@ -44,7 +44,7 @@ class StudentProgressServiceImpl(
         val studentId = requireNotNull(student.id) { "Student id is required to start block" }
         val activeProgress = studentProgressRepository.findFirstByStudentIdAndStatusOrderByStartedAtDesc(
             studentId,
-            StudentProgressStatus.IN_PROGRESS,
+            StudentProgressStatus.IN_PROGRESS.name,
         )
         if (activeProgress != null) {
             return null

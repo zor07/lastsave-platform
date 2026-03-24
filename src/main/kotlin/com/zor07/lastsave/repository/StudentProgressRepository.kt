@@ -1,7 +1,6 @@
 package com.zor07.lastsave.repository
 
 import com.zor07.lastsave.entity.StudentProgress
-import com.zor07.lastsave.entity.enums.StudentProgressStatus
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -21,7 +20,7 @@ interface StudentProgressRepository : JpaRepository<StudentProgress, Long> {
     )
     fun findFirstByStudentIdAndStatusOrderByStartedAtDesc(
         @Param("studentId") studentId: Long,
-        @Param("status") status: StudentProgressStatus,
+        @Param("status") status: String,
     ): StudentProgress?
 
     @Query(
