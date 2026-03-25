@@ -21,3 +21,8 @@ telegram:
 
 app:
   base-url: ${APP_BASE_URL}
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+  base-url: ${OPENAI_BASE_URL:https://api.proxyapi.ru/openai/v1}
+  model: ${OPENAI_MODEL:gpt-4o}
