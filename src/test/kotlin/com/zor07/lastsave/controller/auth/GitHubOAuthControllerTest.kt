@@ -1,6 +1,6 @@
 package com.zor07.lastsave.controller.auth
 
-import com.zor07.lastsave.service.auth.GitHubOAuthService
+import com.zor07.lastsave.service.github.GitHubOAuthService
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.verify
 import org.springframework.beans.factory.annotation.Autowired

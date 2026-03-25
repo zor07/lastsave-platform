@@ -1,7 +1,6 @@
-package com.zor07.lastsave.service.auth
+package com.zor07.lastsave.service.github
 
 import com.zor07.lastsave.service.bot.TelegramBot
-import com.zor07.lastsave.service.github.GitHubOAuthClient
 import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service

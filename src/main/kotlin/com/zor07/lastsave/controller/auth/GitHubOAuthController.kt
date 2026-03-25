@@ -1,6 +1,6 @@
 package com.zor07.lastsave.controller.auth
 
-import com.zor07.lastsave.service.auth.GitHubOAuthService
+import com.zor07.lastsave.service.github.GitHubOAuthService
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
