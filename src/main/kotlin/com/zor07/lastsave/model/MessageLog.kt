@@ -14,4 +14,5 @@ data class MessageLog(
     val studentId: Long,
     val sentAt: LocalDateTime,
     val callbackReceivedAt: LocalDateTime?,
+    val prReceivedAt: LocalDateTime?,
 )

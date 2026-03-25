@@ -9,6 +9,7 @@ object MessageLogsTable : Table("message_log") {
     val studentId = long("student_id")
     val sentAt = datetime("sent_at")
     val callbackReceivedAt = datetime("callback_received_at").nullable()
+    val prReceivedAt = datetime("pr_received_at").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

@@ -29,6 +29,7 @@ class MessageLogRepository {
             studentId = newLog.studentId,
             sentAt = newLog.sentAt,
             callbackReceivedAt = null,
+            prReceivedAt = null,
         )
     }
 
@@ -48,11 +49,18 @@ class MessageLogRepository {
         }
     }
 
+    fun markPrReceived(id: Long) {
+        MessageLogsTable.update({ MessageLogsTable.id eq id }) {
+            it[prReceivedAt] = LocalDateTime.now()
+        }
+    }
+
     private fun ResultRow.toMessageLog() = MessageLog(
         id = this[MessageLogsTable.id],
         messageId = this[MessageLogsTable.messageId],
         studentId = this[MessageLogsTable.studentId],
         sentAt = this[MessageLogsTable.sentAt],
         callbackReceivedAt = this[MessageLogsTable.callbackReceivedAt],
+        prReceivedAt = this[MessageLogsTable.prReceivedAt],
     )
 }

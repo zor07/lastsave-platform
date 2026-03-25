@@ -56,7 +56,7 @@ class MessageDispatchServiceImpl(
         val ready = when (lastMessage.waitFor) {
             WaitFor.NOTHING  -> true
             WaitFor.CALLBACK -> lastLog.callbackReceivedAt != null
-            WaitFor.PR       -> false
+            WaitFor.PR       -> lastLog.prReceivedAt != null
         }
 
         if (!ready) {
