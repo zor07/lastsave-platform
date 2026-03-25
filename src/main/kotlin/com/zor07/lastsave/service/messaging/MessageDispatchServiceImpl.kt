@@ -7,7 +7,7 @@ import com.zor07.lastsave.model.Student
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
-import com.zor07.lastsave.service.bot.TelegramBot
+import com.zor07.lastsave.service.notification.NotificationService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +19,7 @@ class MessageDispatchServiceImpl(
     private val studentProgressRepository: StudentProgressRepository,
     private val messageRepository: MessageRepository,
     private val messageLogRepository: MessageLogRepository,
-    private val telegramBot: TelegramBot,
+    private val notificationService: NotificationService,
 ) : MessageDispatchService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -64,16 +64,7 @@ class MessageDispatchServiceImpl(
     }
 
     private fun send(student: Student, message: Message) {
-        if (message.callbackText != null) {
-            telegramBot.sendMessageWithButton(
-                chatId = student.telegramChatId,
-                text = message.text,
-                buttonText = message.callbackText,
-                callbackData = message.id.toString(),
-            )
-        } else {
-            telegramBot.sendTextMessage(student.telegramChatId, message.text)
-        }
+        notificationService.sendMessage(student, message)
         messageLogRepository.save(NewMessageLog(message.id, student.id, LocalDateTime.now()))
         logger.info("Sent message {} (waitFor={}) to student {}", message.id, message.waitFor, student.id)
     }
