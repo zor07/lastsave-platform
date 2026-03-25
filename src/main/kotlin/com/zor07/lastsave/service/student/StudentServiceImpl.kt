@@ -12,8 +12,7 @@ class StudentServiceImpl(
 
     @Transactional
     override fun registerStudent(telegramChatId: Long, githubUsername: String): Student {
-        studentRepository.findByTelegramChatId(telegramChatId)?.let { return it }
-        studentRepository.findByGithubUsername(githubUsername)?.let { return it }
+        studentRepository.findByChatId(telegramChatId)?.let { return it }
 
         val student = Student(
             telegramChatId = telegramChatId,
@@ -22,9 +21,6 @@ class StudentServiceImpl(
         return studentRepository.save(student)
     }
 
-    override fun findByTelegramChatId(telegramChatId: Long): Student? =
-        studentRepository.findByTelegramChatId(telegramChatId)
-
-    override fun findByGithubUsername(githubUsername: String): Student? =
-        studentRepository.findByGithubUsername(githubUsername)
+    override fun findByChatId(telegramChatId: Long): Student? =
+        studentRepository.findByChatId(telegramChatId)
 }
