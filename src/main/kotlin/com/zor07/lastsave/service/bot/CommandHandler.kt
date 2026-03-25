@@ -6,6 +6,7 @@ import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class CommandHandler(
@@ -17,6 +18,7 @@ class CommandHandler(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @EventListener
+    @Transactional
     fun handle(event: TelegramMessageEvent) {
         val message = event.message
         if (message.isCommand && message.text == "/start") {
