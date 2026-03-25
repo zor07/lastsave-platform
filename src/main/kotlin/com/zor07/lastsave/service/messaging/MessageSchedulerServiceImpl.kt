@@ -3,7 +3,6 @@ package com.zor07.lastsave.service.messaging
 import com.zor07.lastsave.entity.Message
 import com.zor07.lastsave.entity.MessageLog
 import com.zor07.lastsave.entity.Student
-import com.zor07.lastsave.entity.StudentProgress
 import com.zor07.lastsave.entity.enums.MessageWaitFor
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.MessageRepository
