@@ -10,6 +10,10 @@ class NotificationServiceImpl(
     private val telegramBot: TelegramBot,
 ) : NotificationService {
 
+    override fun sendText(chatId: Long, text: String) {
+        telegramBot.sendTextMessage(chatId, text)
+    }
+
     override fun sendText(student: Student, text: String) {
         telegramBot.sendTextMessage(student.telegramChatId, text)
     }

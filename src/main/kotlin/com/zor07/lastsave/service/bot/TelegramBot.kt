@@ -1,9 +1,9 @@
 package com.zor07.lastsave.service.bot
 
-import com.zor07.lastsave.service.github.GitHubOAuthService
-import com.zor07.lastsave.service.student.StudentService
+import jakarta.annotation.PostConstruct
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.TelegramBotsApi
@@ -13,15 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
-import jakarta.annotation.PostConstruct
 
 @Component
 class TelegramBot(
-    private val studentService: StudentService,
-    private val gitHubOAuthService: GitHubOAuthService,
+    private val eventPublisher: ApplicationEventPublisher,
     @Value("\${telegram.bot.token}") private val token: String,
     @Value("\${telegram.bot.username}") private val username: String,
-
 ) : TelegramLongPollingBot(token) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -35,12 +32,10 @@ class TelegramBot(
 
     override fun onUpdateReceived(update: Update?) {
         val safeUpdate = requireNotNull(update) { "Update must not be null" }
-        safeUpdate.message?.let { handleMessage(it) }
+        safeUpdate.message?.let { eventPublisher.publishEvent(TelegramMessageEvent(it)) }
         safeUpdate.callbackQuery?.let { callback ->
-            val chatId = requireNotNull(callback.message?.chatId) { "Callback chatId is required" }
-            val messageId = requireNotNull(callback.data?.toLongOrNull()) { "Callback data must contain message id" }
-            // TODO handle call back
-            answerCallback(callback.id, "Спасибо! Продолжаем.")
+            answerCallback(callback.id)
+            eventPublisher.publishEvent(TelegramCallbackEvent(callback))
         }
     }
 
@@ -48,19 +43,18 @@ class TelegramBot(
         try {
             execute(SendMessage(chatId.toString(), text))
         } catch (ex: Exception) {
-            logger.error("Failed to send message", ex)
+            logger.error("Failed to send message to chatId={}", chatId, ex)
         }
     }
 
     fun sendMessageWithButton(chatId: Long, text: String, buttonText: String, callbackData: String) {
-        val keyboard = InlineKeyboardMarkup(listOf(listOf(InlineKeyboardButton(buttonText).apply { this.callbackData = callbackData })))
+        val keyboard = InlineKeyboardMarkup(listOf(listOf(
+            InlineKeyboardButton(buttonText).apply { this.callbackData = callbackData }
+        )))
         try {
-            val message = SendMessage(chatId.toString(), text).apply {
-                replyMarkup = keyboard
-            }
-            execute(message)
+            execute(SendMessage(chatId.toString(), text).apply { replyMarkup = keyboard })
         } catch (ex: Exception) {
-            logger.error("Failed to send message with button", ex)
+            logger.error("Failed to send message with button to chatId={}", chatId, ex)
         }
     }
 
@@ -68,20 +62,7 @@ class TelegramBot(
         try {
             execute(AnswerCallbackQuery(callbackQueryId).apply { this.text = text })
         } catch (ex: Exception) {
-            logger.error("Failed to answer callback", ex)
-        }
-    }
-
-    private fun handleMessage(message: org.telegram.telegrambots.meta.api.objects.Message) {
-        if (message.isCommand && message.text == "/start") {
-            val chatId = message.chatId
-            val existing = studentService.findByChatId(chatId)
-            if (existing != null) {
-                sendTextMessage(chatId, "Ты уже зарегистрирован, GitHub username: ${existing.githubUsername}.")
-                return
-            }
-            val url = gitHubOAuthService.registrationUrl(chatId)
-            sendTextMessage(chatId, "Привет! Авторизуйся через GitHub: $url")
+            logger.error("Failed to answer callback {}", callbackQueryId, ex)
         }
     }
 }
