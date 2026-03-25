@@ -8,6 +8,8 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
+import java.time.LocalDateTime
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -29,6 +31,17 @@ class StudentProgressRepository {
             startedAt = newProgress.startedAt,
             completedAt = null,
         )
+    }
+
+    fun markCompleted(studentId: Long, sectionId: Long) {
+        StudentProgressTable.update({
+            (StudentProgressTable.studentId eq studentId) and
+            (StudentProgressTable.sectionId eq sectionId) and
+            (StudentProgressTable.status eq ProgressStatus.IN_PROGRESS.name)
+        }) {
+            it[status] = ProgressStatus.COMPLETED.name
+            it[completedAt] = LocalDateTime.now()
+        }
     }
 
     fun findActiveByStudentId(studentId: Long): StudentProgress? =

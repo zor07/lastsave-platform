@@ -10,6 +10,20 @@ import org.springframework.stereotype.Repository
 @Repository
 class BlockRepository {
 
+    fun findById(id: Long): Block? =
+        BlocksTable.selectAll()
+            .where { BlocksTable.id eq id }
+            .singleOrNull()
+            ?.toBlock()
+
+    fun findNextByOrder(afterOrder: Int): Block? =
+        BlocksTable.selectAll()
+            .where { BlocksTable.order greater afterOrder }
+            .orderBy(BlocksTable.order to SortOrder.ASC)
+            .limit(1)
+            .singleOrNull()
+            ?.toBlock()
+
     fun findFirst(): Block? =
         BlocksTable.selectAll()
             .orderBy(BlocksTable.order to SortOrder.ASC)

@@ -10,6 +10,8 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.update
+import java.time.LocalDateTime
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -39,6 +41,12 @@ class MessageLogRepository {
             .limit(1)
             .singleOrNull()
             ?.toMessageLog()
+
+    fun markCallbackReceived(id: Long) {
+        MessageLogsTable.update({ MessageLogsTable.id eq id }) {
+            it[callbackReceivedAt] = LocalDateTime.now()
+        }
+    }
 
     private fun ResultRow.toMessageLog() = MessageLog(
         id = this[MessageLogsTable.id],

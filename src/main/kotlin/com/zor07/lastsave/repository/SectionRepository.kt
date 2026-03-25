@@ -5,11 +5,26 @@ import com.zor07.lastsave.model.Section
 import com.zor07.lastsave.table.SectionsTable
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Repository
 
 @Repository
 class SectionRepository {
+
+    fun findById(id: Long): Section? =
+        SectionsTable.selectAll()
+            .where { SectionsTable.id eq id }
+            .singleOrNull()
+            ?.toSection()
+
+    fun findNextInTopic(topicId: Long, afterOrder: Int): Section? =
+        SectionsTable.selectAll()
+            .where { (SectionsTable.topicId eq topicId) and (SectionsTable.order greater afterOrder) }
+            .orderBy(SectionsTable.order to SortOrder.ASC)
+            .limit(1)
+            .singleOrNull()
+            ?.toSection()
 
     fun findFirstInTopic(topicId: Long): Section? =
         SectionsTable.selectAll()
