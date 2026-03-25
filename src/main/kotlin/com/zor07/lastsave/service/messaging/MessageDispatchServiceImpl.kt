@@ -68,6 +68,7 @@ class MessageDispatchServiceImpl(
         if (next == null) {
             logger.info("Student {} finished section {}, advancing", student.id, progress.sectionId)
             studentProgressService.completeSectionAndAdvance(student, progress.sectionId)
+            advanceIfPossible(student)
             return
         }
         send(student, next)
