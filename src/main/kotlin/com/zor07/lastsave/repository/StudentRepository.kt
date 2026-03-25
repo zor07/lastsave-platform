@@ -1,8 +1,11 @@
 package com.zor07.lastsave.repository
 
+import com.zor07.lastsave.enums.ProgressStatus
 import com.zor07.lastsave.model.NewStudent
 import com.zor07.lastsave.model.Student
+import com.zor07.lastsave.table.StudentProgressTable
 import com.zor07.lastsave.table.StudentsTable
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -26,6 +29,13 @@ class StudentRepository {
             createdAt = now,
         )
     }
+
+    fun findAllWithActiveProgress(): List<Student> =
+        StudentsTable
+            .join(StudentProgressTable, JoinType.INNER, StudentsTable.id, StudentProgressTable.studentId)
+            .selectAll()
+            .where { StudentProgressTable.status eq ProgressStatus.IN_PROGRESS.name }
+            .map { it.toStudent() }
 
     fun findByChatId(chatId: Long): Student? =
         StudentsTable.selectAll()
