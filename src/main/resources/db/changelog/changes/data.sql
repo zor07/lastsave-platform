@@ -19,8 +19,8 @@ INSERT INTO section (id, topic_id, title, "order", unlock_condition) VALUES
 
 -- materials
 INSERT INTO material (id, section_id, type, title, url, "order") VALUES
-                                                                     (1, 1, 'THEORY', 'Настройка окружения', 'https://zor07.yonote.ru/share/c5c683fd-ba94-4d97-991f-1d231757b989/doc/1-nastrojka-okruzheniya-jdk-idea-pervyj-proekt-IxNenKR0Tn', 1),
-                                                                     (2, 3, 'THEORY', 'Справочник по синтаксису', 'https://zor07.yonote.ru/share/697a6378-254d-4687-a55f-93b04be57c10/doc/spravochnik-po-sintaksisu-java-kS1YqWlhj0', 1);
+                                                                     (1, 1, 'TEXT', 'Настройка окружения', 'https://zor07.yonote.ru/share/c5c683fd-ba94-4d97-991f-1d231757b989/doc/1-nastrojka-okruzheniya-jdk-idea-pervyj-proekt-IxNenKR0Tn', 1),
+                                                                     (2, 3, 'TEXT', 'Справочник по синтаксису', 'https://zor07.yonote.ru/share/697a6378-254d-4687-a55f-93b04be57c10/doc/spravochnik-po-sintaksisu-java-kS1YqWlhj0', 1);
 
 -- messages
 INSERT INTO message (id, section_id, sender, text, callback_text, wait_for, "order") VALUES

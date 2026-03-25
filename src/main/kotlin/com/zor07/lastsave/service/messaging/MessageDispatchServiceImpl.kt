@@ -7,6 +7,7 @@ import com.zor07.lastsave.model.Student
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
+import com.zor07.lastsave.service.material.MaterialService
 import com.zor07.lastsave.service.notification.NotificationService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -20,6 +21,7 @@ class MessageDispatchServiceImpl(
     private val messageRepository: MessageRepository,
     private val messageLogRepository: MessageLogRepository,
     private val notificationService: NotificationService,
+    private val materialService: MaterialService,
 ) : MessageDispatchService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -40,6 +42,10 @@ class MessageDispatchServiceImpl(
                 return
             }
             send(student, first)
+            val materials = materialService.getSectionMaterials(progress.sectionId)
+            if (materials.isNotEmpty()) {
+                notificationService.sendText(student, materialService.formatMessage(materials))
+            }
             return
         }
 
