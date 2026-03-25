@@ -5,6 +5,7 @@ import com.zor07.lastsave.service.messaging.MessageDispatchService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ProgressScheduler(
@@ -15,6 +16,7 @@ class ProgressScheduler(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Scheduled(cron = "0 * * * * *")
+    @Transactional
     fun tick() {
         val students = studentRepository.findAllWithActiveProgress()
         logger.info("=== Scheduler tick: {} active student(s) ===", students.size)
