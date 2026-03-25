@@ -1,6 +1,7 @@
 package com.zor07.lastsave.service.github
 
 import com.zor07.lastsave.service.bot.TelegramBot
+import com.zor07.lastsave.service.progress.StudentProgressService
 import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class GitHubOAuthServiceImpl(
     private val studentService: StudentService,
+    private val studentProgressService: StudentProgressService,
     private val gitHubOAuthClient: GitHubOAuthClient,
     private val telegramBot: TelegramBot,
     @Value("\${github.client-id}") private val githubClientId: String,
@@ -30,6 +32,8 @@ class GitHubOAuthServiceImpl(
         )
 
         telegramBot.sendTextMessage(chatId, "GitHub ок — вижу твой username ${student.githubUsername}.")
+
+        studentProgressService.startProgress(student)
 
         logger.info("Registered student {} for chat {}", student.id, chatId)
     }
