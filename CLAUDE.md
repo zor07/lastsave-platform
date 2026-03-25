@@ -1,9 +1,9 @@
 # lastsave — платформа Java-курса
 
 ## Project
-Kotlin + Spring Boot 3 + PostgreSQL + Liquibase + JPA
+Kotlin + Spring Boot 3 + PostgreSQL + Liquibase + Exposed
 Package: com.zor07.lastsave
-Structure: layered (controllers, services, repositories, entities, dto)
+Structure: layered (controllers, services, repositories, model, table, dto)
 
 ## Current state
 Project is being refactored after AI-generated code. Many things may not work.
@@ -25,6 +25,8 @@ Student, StudentProgress, Block, Topic, Section, Material, Message, MessageLog
 - Column names in snake_case
 - Liquibase migrations in XML format, path: src/main/resources/db/changelog/
 - Prefer SQL over JPA methods with long names
+- Domain model classes (read/write DTOs) go in package `model`
+- Exposed Table objects go in package `table`
 
 ## External APIs
 - Always wrap external API calls in a dedicated RestTemplate bean

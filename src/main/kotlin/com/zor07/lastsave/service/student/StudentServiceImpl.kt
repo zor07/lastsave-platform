@@ -1,6 +1,7 @@
 package com.zor07.lastsave.service.student
 
-import com.zor07.lastsave.entity.Student
+import com.zor07.lastsave.model.NewStudent
+import com.zor07.lastsave.model.Student
 import com.zor07.lastsave.repository.StudentRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,11 +15,7 @@ class StudentServiceImpl(
     override fun registerStudent(telegramChatId: Long, githubUsername: String): Student {
         studentRepository.findByChatId(telegramChatId)?.let { return it }
 
-        val student = Student(
-            telegramChatId = telegramChatId,
-            githubUsername = githubUsername,
-        )
-        return studentRepository.save(student)
+        return studentRepository.save(NewStudent(telegramChatId, githubUsername))
     }
 
     override fun findByChatId(telegramChatId: Long): Student? =

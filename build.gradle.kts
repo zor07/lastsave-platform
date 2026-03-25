@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
-    kotlin("plugin.jpa") version "1.9.22"
     id("org.springframework.boot") version "3.2.4"
     id("io.spring.dependency-management") version "1.1.4"
 }
@@ -18,7 +17,8 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.49.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.49.0")
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots:6.8.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
