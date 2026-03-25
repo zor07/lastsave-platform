@@ -20,4 +20,7 @@ class StudentServiceImpl(
 
     override fun findByChatId(telegramChatId: Long): Student? =
         studentRepository.findByChatId(telegramChatId)
+
+    override fun findByGithubUsername(githubUsername: String): Student? =
+        studentRepository.findByGithubUsername(githubUsername)
 }

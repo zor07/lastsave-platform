@@ -43,6 +43,12 @@ class StudentRepository {
             .singleOrNull()
             ?.toStudent()
 
+    fun findByGithubUsername(githubUsername: String): Student? =
+        StudentsTable.selectAll()
+            .where { StudentsTable.githubUsername eq githubUsername }
+            .singleOrNull()
+            ?.toStudent()
+
     private fun ResultRow.toStudent() = Student(
         id = this[StudentsTable.id],
         telegramChatId = this[StudentsTable.telegramChatId],
