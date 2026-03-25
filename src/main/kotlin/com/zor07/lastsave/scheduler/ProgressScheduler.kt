@@ -14,7 +14,7 @@ class ProgressScheduler(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Scheduled(fixedDelay = 60_000)
+    @Scheduled(cron = "0 * * * * *")
     fun tick() {
         val students = studentRepository.findAllWithActiveProgress()
         logger.info("=== Scheduler tick: {} active student(s) ===", students.size)
