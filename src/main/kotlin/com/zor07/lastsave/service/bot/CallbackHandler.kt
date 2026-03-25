@@ -5,7 +5,7 @@ import com.zor07.lastsave.model.MessageLog
 import com.zor07.lastsave.model.Student
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.MessageRepository
-import com.zor07.lastsave.service.progress.StudentProgressService
+import com.zor07.lastsave.service.notification.NotificationService
 import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.context.event.EventListener
@@ -18,7 +18,7 @@ class CallbackHandler(
     private val studentService: StudentService,
     private val messageRepository: MessageRepository,
     private val messageLogRepository: MessageLogRepository,
-    private val studentProgressService: StudentProgressService,
+    private val notificationService: NotificationService,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -34,7 +34,11 @@ class CallbackHandler(
             messageLogRepository.markCallbackReceived(log.id)
             logger.info("Callback received from student {} for message {}", student.id, message.id)
 
-            studentProgressService.completeSectionAndAdvance(student, message.sectionId)
+            val telegramMessageId = event.callbackQuery.message?.messageId
+            if (telegramMessageId != null) {
+                notificationService.removeKeyboard(student, telegramMessageId)
+            }
+            notificationService.sendText(student, "Супер! Скоро вернусь с апдейтами")
         } catch (e: Exception) {
             logger.error("Failed to process callback: {}", e.message)
         }

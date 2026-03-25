@@ -7,4 +7,5 @@ interface NotificationService {
     fun sendText(chatId: Long, text: String)
     fun sendText(student: Student, text: String)
     fun sendMessage(student: Student, message: Message)
+    fun removeKeyboard(student: Student, telegramMessageId: Int)
 }

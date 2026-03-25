@@ -9,6 +9,7 @@ import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.service.material.MaterialService
 import com.zor07.lastsave.service.notification.NotificationService
+import com.zor07.lastsave.service.progress.StudentProgressService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -22,6 +23,7 @@ class MessageDispatchServiceImpl(
     private val messageLogRepository: MessageLogRepository,
     private val notificationService: NotificationService,
     private val materialService: MaterialService,
+    private val studentProgressService: StudentProgressService,
 ) : MessageDispatchService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -62,8 +64,10 @@ class MessageDispatchServiceImpl(
             return
         }
 
-        val next = messageRepository.findNextInSection(progress.sectionId, lastMessage.order) ?: run {
-            logger.info("Student {} has received all messages in section {}, waiting for section advance", student.id, progress.sectionId)
+        val next = messageRepository.findNextInSection(progress.sectionId, lastMessage.order)
+        if (next == null) {
+            logger.info("Student {} finished section {}, advancing", student.id, progress.sectionId)
+            studentProgressService.completeSectionAndAdvance(student, progress.sectionId)
             return
         }
         send(student, next)

@@ -18,6 +18,10 @@ class NotificationServiceImpl(
         telegramBot.sendTextMessage(student.telegramChatId, text)
     }
 
+    override fun removeKeyboard(student: Student, telegramMessageId: Int) {
+        telegramBot.removeInlineKeyboard(student.telegramChatId, telegramMessageId)
+    }
+
     override fun sendMessage(student: Student, message: Message) {
         if (message.callbackText != null) {
             telegramBot.sendMessageWithButton(

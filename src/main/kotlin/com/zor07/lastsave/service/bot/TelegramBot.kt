@@ -7,8 +7,8 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.TelegramBotsApi
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton
@@ -34,7 +34,6 @@ class TelegramBot(
         val safeUpdate = requireNotNull(update) { "Update must not be null" }
         safeUpdate.message?.let { eventPublisher.publishEvent(TelegramMessageEvent(it)) }
         safeUpdate.callbackQuery?.let { callback ->
-            answerCallback(callback.id)
             eventPublisher.publishEvent(TelegramCallbackEvent(callback))
         }
     }
@@ -58,11 +57,15 @@ class TelegramBot(
         }
     }
 
-    fun answerCallback(callbackQueryId: String, text: String? = null) {
+    fun removeInlineKeyboard(chatId: Long, messageId: Int) {
         try {
-            execute(AnswerCallbackQuery(callbackQueryId).apply { this.text = text })
+            execute(EditMessageReplyMarkup().apply {
+                this.chatId = chatId.toString()
+                this.messageId = messageId
+                this.replyMarkup = InlineKeyboardMarkup(emptyList())
+            })
         } catch (ex: Exception) {
-            logger.error("Failed to answer callback {}", callbackQueryId, ex)
+            logger.error("Failed to remove keyboard from chatId={}, messageId={}", chatId, messageId, ex)
         }
     }
 }
