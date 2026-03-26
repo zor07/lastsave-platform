@@ -32,6 +32,7 @@ class OpenAiClient(
             model = model,
             messages = listOf(OpenAiMessage(role = "user", content = prompt)),
         )
+        logger.info("Sending request to OpenAI: url=$baseUrl/chat/completions, model=$model, promptLength=${prompt.length}")
 
         val response = restTemplate.postForEntity(
             "$baseUrl/chat/completions",
