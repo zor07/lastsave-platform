@@ -52,6 +52,7 @@ class OpenAiClient(
             logger.error("OpenAI returned empty response")
             throw IllegalStateException("Empty response from OpenAI")
         }
+        logger.info("OpenAI response: contentLength=${content.length}\n$content")
         return content
     }
 }
