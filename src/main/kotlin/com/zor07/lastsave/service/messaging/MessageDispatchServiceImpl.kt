@@ -68,7 +68,9 @@ class MessageDispatchServiceImpl(
         if (next == null) {
             logger.info("Student {} finished section {}, advancing", student.id, progress.sectionId)
             studentProgressService.completeSectionAndAdvance(student, progress.sectionId)
-            advanceIfPossible(student)
+            val newProgress = studentProgressRepository.findActiveByStudentId(student.id) ?: return
+            val firstMessage = messageRepository.findFirstInSection(newProgress.sectionId) ?: return
+            send(student, firstMessage)
             return
         }
         send(student, next)

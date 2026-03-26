@@ -22,6 +22,7 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots:6.8.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     runtimeOnly("org.postgresql:postgresql")
 
