@@ -33,11 +33,23 @@ class PrReviewServiceImpl(
 
             val review = aiReviewService.review(diff)
 
-            notificationService.sendText(student, "Ревью твоего PR $prUrl\n\n$review")
+            val header = "Ревью твоего PR $prUrl\n\n"
+            val chunks = splitIntoChunks(header + review, 2000)
+            chunks.forEach { notificationService.sendText(student, it) }
             logger.info("PR review sent to student {}", student.id)
         } catch (e: Exception) {
             logger.error("Failed to process PR review for githubUsername={}: {}", githubUsername, e.message)
         }
+    }
+
+    private fun splitIntoChunks(text: String, chunkSize: Int): List<String> {
+        val chunks = mutableListOf<String>()
+        var start = 0
+        while (start < text.length) {
+            chunks.add(text.substring(start, minOf(start + chunkSize, text.length)))
+            start += chunkSize
+        }
+        return chunks
     }
 
     private fun parsePrReview(githubUsername: String): ParsedPrReview {
