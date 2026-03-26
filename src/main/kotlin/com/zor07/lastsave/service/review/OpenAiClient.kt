@@ -1,5 +1,6 @@
 package com.zor07.lastsave.service.review
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.zor07.lastsave.dto.openai.OpenAiMessage
 import com.zor07.lastsave.dto.openai.OpenAiRequest
 import com.zor07.lastsave.dto.openai.OpenAiResponse
@@ -19,6 +20,7 @@ class OpenAiClient(
     @Value("\${openai.api-key}") private val apiKey: String,
     @Value("\${openai.base-url}") private val baseUrl: String,
     @Value("\${openai.model}") private val model: String,
+    private val objectMapper: ObjectMapper,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -33,6 +35,11 @@ class OpenAiClient(
             messages = listOf(OpenAiMessage(role = "user", content = prompt)),
         )
         logger.info("Sending request to OpenAI: url=$baseUrl/chat/completions, model=$model, promptLength=${prompt.length}")
+        logger.info(
+            "OpenAI request details:\n  URL: $baseUrl/chat/completions\n  Headers: {}\n  Body: {}",
+            headers.map { (k, v) -> "$k: ${if (k == HttpHeaders.AUTHORIZATION) "Bearer ***" else v}" },
+            objectMapper.writeValueAsString(body)
+        )
 
         val response = restTemplate.postForEntity(
             "$baseUrl/chat/completions",
