@@ -1,7 +1,7 @@
-package com.zor07.lastsave.service.messaging
+package com.zor07.lastsave.service.progress
 
 import com.zor07.lastsave.model.Student
 
-interface MessageDispatchService {
+interface ProgressFlowService {
     fun advanceIfPossible(student: Student)
 }

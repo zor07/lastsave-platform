@@ -1,4 +1,4 @@
-package com.zor07.lastsave.service.messaging
+package com.zor07.lastsave.service.progress
 
 import com.zor07.lastsave.enums.WaitFor
 import com.zor07.lastsave.model.Message
@@ -9,7 +9,6 @@ import com.zor07.lastsave.repository.MessageRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.service.material.MaterialService
 import com.zor07.lastsave.service.notification.NotificationService
-import com.zor07.lastsave.service.progress.StudentProgressService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,14 +16,14 @@ import java.time.LocalDateTime
 
 @Service
 @Transactional
-class MessageDispatchServiceImpl(
+class ProgressFlowServiceImpl(
     private val studentProgressRepository: StudentProgressRepository,
     private val messageRepository: MessageRepository,
     private val messageLogRepository: MessageLogRepository,
     private val notificationService: NotificationService,
     private val materialService: MaterialService,
     private val studentProgressService: StudentProgressService,
-) : MessageDispatchService {
+) : ProgressFlowService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
