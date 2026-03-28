@@ -27,7 +27,7 @@ class ProgressFlowServiceImpl(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    override fun advanceIfPossible(student: Student) {
+    override fun process(student: Student) {
         val progress = studentProgressRepository.findActiveByStudentId(student.id) ?: run {
             logger.info("Student {} has no active progress, skipping", student.id)
             return

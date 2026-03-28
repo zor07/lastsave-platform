@@ -23,7 +23,7 @@ class ProgressScheduler(
         if (students.isEmpty()) return
         students.forEach { student ->
             logger.info("Processing student {} (chatId={})", student.id, student.telegramChatId)
-            progressFlowService.advanceIfPossible(student)
+            progressFlowService.process(student)
         }
         logger.info("=== Scheduler tick complete ===")
     }
