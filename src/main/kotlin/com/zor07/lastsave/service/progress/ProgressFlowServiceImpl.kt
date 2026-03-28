@@ -70,6 +70,10 @@ class ProgressFlowServiceImpl(
             val newProgress = studentProgressRepository.findActiveByStudentId(student.id) ?: return
             val firstMessage = messageRepository.findFirstInSection(newProgress.sectionId) ?: return
             send(student, firstMessage)
+            val materials = materialService.getSectionMaterials(newProgress.sectionId)
+            if (materials.isNotEmpty()) {
+                notificationService.sendText(student, materialService.formatMessage(materials))
+            }
             return
         }
         send(student, next)
