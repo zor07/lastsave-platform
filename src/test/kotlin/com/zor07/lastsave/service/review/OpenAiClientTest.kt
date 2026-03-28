@@ -1,21 +1,20 @@
 package com.zor07.lastsave.service.review
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.junit.jupiter.api.Assertions.assertEquals
+import com.zor07.lastsave.dto.openai.OpenAiResponse
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.any
-import org.mockito.Mockito.eq
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.`when`
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import com.zor07.lastsave.dto.openai.OpenAiResponse
 
 class OpenAiClientTest {
 
     private val objectMapper = jacksonObjectMapper()
-
-    private val mockRestTemplate: RestTemplate = mock(RestTemplate::class.java)
+    private val mockRestTemplate: RestTemplate = mock()
 
     private val client = OpenAiClient(
         restTemplate = mockRestTemplate,
@@ -58,7 +57,7 @@ class OpenAiClientTest {
 
         val parsedResponse = objectMapper.readValue(json, OpenAiResponse::class.java)
 
-        `when`(mockRestTemplate.postForEntity(
+        whenever(mockRestTemplate.postForEntity(
             eq("https://api.proxyapi.ru/openai/v1/chat/completions"),
             any(),
             eq(OpenAiResponse::class.java),
@@ -66,6 +65,6 @@ class OpenAiClientTest {
 
         val result = client.complete("test prompt")
 
-        assertEquals("конструктивную и подробную обратную связь", result)
+        assertThat(result).isEqualTo("конструктивную и подробную обратную связь")
     }
 }
