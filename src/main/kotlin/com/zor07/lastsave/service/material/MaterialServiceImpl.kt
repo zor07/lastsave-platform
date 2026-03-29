@@ -14,14 +14,22 @@ class MaterialServiceImpl(
         materialRepository.findBySectionId(sectionId)
 
     override fun formatMessage(materials: List<Material>): String {
-        val sb = StringBuilder("Материалы к разделу:\n\n")
-        materials.forEach { material ->
-            val prefix = when (material.type) {
-                MaterialType.VIDEO -> "Посмотри видео"
-                MaterialType.TEXT  -> "Почитай документацию"
-            }
-            sb.appendLine("$prefix: [${material.title}](${material.url})")
+        val sb = StringBuilder()
+        val byType = materials.groupBy { it.type }
+
+        byType[MaterialType.TEXT]?.let { texts ->
+            sb.appendLine("Почитай документацию:")
+            sb.appendLine()
+            texts.forEach { sb.appendLine("${it.title}: ${it.url}") }
         }
+
+        byType[MaterialType.VIDEO]?.let { videos ->
+            if (sb.isNotEmpty()) sb.appendLine()
+            sb.appendLine("Посмотри видео:")
+            sb.appendLine()
+            videos.forEach { sb.appendLine("${it.title}: ${it.url}") }
+        }
+
         return sb.toString().trimEnd()
     }
 }
