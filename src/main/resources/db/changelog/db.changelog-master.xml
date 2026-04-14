@@ -9,10 +9,10 @@
     <include relativeToChangelogFile="true" file="changes/001-create-students-table.xml"/>
     <include relativeToChangelogFile="true" file="changes/002-create-course-structure.xml"/>
     <include relativeToChangelogFile="true" file="changes/003-add-pr-received-at-to-message-log.xml"/>
-    <include relativeToChangelogFile="true" file="changes/data.sql"/>
     <include relativeToChangelogFile="true" file="changes/004-create-git-repository.xml"/>
     <include relativeToChangelogFile="true" file="changes/005-git-repository-data.xml"/>
     <include relativeToChangelogFile="true" file="changes/006-alter-block-git-repository.xml"/>
     <include relativeToChangelogFile="true" file="changes/007-create-student-repository.xml"/>
+    <include relativeToChangelogFile="true" file="changes/data.sql"/>
 
 </databaseChangeLog>
