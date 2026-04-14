@@ -5,5 +5,5 @@ import com.zor07.lastsave.model.Student
 data class BlockStartedEvent(
     val student: Student,
     val blockTitle: String,
-    val templateRepoName: String,
+    val gitRepositoryId: Long,
 )

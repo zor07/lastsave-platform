@@ -54,7 +54,7 @@ class StudentProgressServiceImpl(
             startedAt = LocalDateTime.now(),
         ))
 
-        eventPublisher.publishEvent(BlockStartedEvent(student, block.title, block.templateRepoName))
+        eventPublisher.publishEvent(BlockStartedEvent(student, block.title, block.gitRepositoryId))
         logger.info("Started block {} for student {}", block.id, student.id)
     }
 

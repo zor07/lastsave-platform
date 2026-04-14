@@ -35,7 +35,7 @@ class BlockRepository {
         id = this[BlocksTable.id],
         courseId = this[BlocksTable.courseId],
         title = this[BlocksTable.title],
-        templateRepoName = this[BlocksTable.templateRepoName],
+        gitRepositoryId = this[BlocksTable.gitRepositoryId],
         order = this[BlocksTable.order],
     )
 }
