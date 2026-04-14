@@ -40,9 +40,21 @@ Student, StudentProgress, Block, Topic, Section, Material, Message, MessageLog
 - No custom Repository methods unless explicitly asked
 - Circular dependencies are not allowed. Fix by restructuring, not by @Lazy
 
+## Migrations
+- Each migration file has a single responsibility (SRP)
+- Schema changes, data inserts, and table alterations go in separate files
+- Naming: `NNN-<what-it-does>.xml` (e.g. `006-alter-block-git-repository.xml`)
+
 ## VCS
 - Always do `git add` for every new file you create
 - At the end always propose a commit message that would fit to changes you've made
+
+## Workflow
+- Before making changes: explore the code and understand the current implementation
+- Describe changes in words and wait for approval before writing code
+- Every task is done in a separate branch — create it before starting
+- Work one step at a time; move to the next only after user confirms the current one
+- Commit only on explicit user signal; propose commit message first
 
 ## Build & Test
 ./gradlew build
