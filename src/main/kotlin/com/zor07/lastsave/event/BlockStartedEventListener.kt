@@ -7,6 +7,7 @@ import com.zor07.lastsave.service.github.GitHubService
 import com.zor07.lastsave.service.notification.NotificationService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.event.TransactionPhase
 import org.springframework.transaction.event.TransactionalEventListener
@@ -22,7 +23,7 @@ class BlockStartedEventListener(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onBlockStarted(event: BlockStartedEvent) {
         val existing = studentRepoRepository.findByStudentAndGitRepository(
