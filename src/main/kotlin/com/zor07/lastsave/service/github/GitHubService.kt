@@ -1,5 +1,9 @@
 package com.zor07.lastsave.service.github
 
+import com.goterl.lazysodium.LazySodiumJava
+import com.goterl.lazysodium.SodiumJava
+import com.goterl.lazysodium.interfaces.Box
+import com.zor07.lastsave.dto.github.RepoPublicKeyResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
@@ -8,6 +12,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.util.Base64
 
 @Service
 class GitHubService(
@@ -15,6 +20,8 @@ class GitHubService(
     private val restTemplate: RestTemplate,
     @Value("\${github.token}") private val token: String,
     @Value("\${github.org}") private val org: String,
+    @Value("\${app.base-url}") private val appBaseUrl: String,
+    @Value("\${review.secret-token}") private val reviewSecretToken: String,
 ) {
 
     fun createRepoFromTemplate(
@@ -35,13 +42,43 @@ class GitHubService(
         val request = HttpEntity(body, headers)
         restTemplate.postForEntity(url, request, Map::class.java)
         addCollaborator(newRepoName, collaboratorGithubUsername)
+        addRepoSecrets(newRepoName)
         return "https://github.com/$org/$newRepoName"
+    }
+
+    private fun addRepoSecrets(repoName: String) {
+        addSecret(repoName, "APP_BASE_URL", appBaseUrl)
+        addSecret(repoName, "REVIEW_SECRET_TOKEN", reviewSecretToken)
+    }
+
+    private fun addSecret(repoName: String, secretName: String, secretValue: String) {
+        val publicKey = getRepoPublicKey(repoName)
+        val encryptedValue = encryptSecret(publicKey.key, secretValue)
+        val url = "https://api.github.com/repos/$org/$repoName/actions/secrets/$secretName"
+        val body = mapOf(
+            "encrypted_value" to encryptedValue,
+            "key_id" to publicKey.keyId,
+        )
+        restTemplate.exchange(url, HttpMethod.PUT, HttpEntity(body, authHeaders()), Void::class.java)
+    }
+
+    private fun getRepoPublicKey(repoName: String): RepoPublicKeyResponse {
+        val url = "https://api.github.com/repos/$org/$repoName/actions/secrets/public-key"
+        return restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Void>(authHeaders()), RepoPublicKeyResponse::class.java).body!!
+    }
+
+    private fun encryptSecret(publicKey: String, secretValue: String): String {
+        val sodium = LazySodiumJava(SodiumJava())
+        val publicKeyBytes = Base64.getDecoder().decode(publicKey)
+        val messageBytes = secretValue.toByteArray(Charsets.UTF_8)
+        val cipherText = ByteArray(Box.SEALBYTES + messageBytes.size)
+        sodium.cryptoBoxSeal(cipherText, messageBytes, messageBytes.size.toLong(), publicKeyBytes)
+        return Base64.getEncoder().encodeToString(cipherText)
     }
 
     private fun addCollaborator(repoName: String, githubUsername: String) {
         val url = "https://api.github.com/repos/$org/$repoName/collaborators/$githubUsername"
-        val headers = authHeaders()
-        val request = HttpEntity(emptyMap<String, Any>(), headers)
+        val request = HttpEntity(emptyMap<String, Any>(), authHeaders())
         restTemplate.exchange(url, HttpMethod.PUT, request, Void::class.java)
     }
 

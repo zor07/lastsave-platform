@@ -23,6 +23,8 @@ dependencies {
     implementation("org.telegram:telegrambots:6.8.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.goterl:lazysodium-java:5.1.4")
+    implementation("net.java.dev.jna:jna:5.14.0")
 
     runtimeOnly("org.postgresql:postgresql")
 
