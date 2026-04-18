@@ -24,7 +24,8 @@ docker compose up -d
 | `DB_NAME` | yes | — | Database name |
 | `DB_USER` | yes | — | Database user |
 | `DB_PASSWORD` | yes | — | Database password |
-| `GITHUB_TOKEN` | yes | — | Personal access token for GitHub API (needs `repo` + `secrets` scopes) |
+| `GITHUB_TOKEN` | yes | — | Fine-grained PAT for GitHub API (repo management, secrets, collaborators) |
+| `GITHUB_PR_TOKEN` | yes | — | Classic PAT for reading PR diffs (`repo` scope required) |
 | `GITHUB_ORG` | yes | — | GitHub organization name |
 | `GITHUB_CLIENT_ID` | yes | — | GitHub OAuth App client ID |
 | `GITHUB_CLIENT_SECRET` | yes | — | GitHub OAuth App client secret |
@@ -33,7 +34,7 @@ docker compose up -d
 | `TELEGRAM_BOT_PROXY_HOST` | no | — | SOCKS5 proxy host for Telegram (needed when Telegram is blocked) |
 | `TELEGRAM_BOT_PROXY_PORT` | no | `0` | SOCKS5 proxy port |
 | `APP_BASE_URL` | yes | — | Public base URL of the platform (injected into student repos as Actions secret) |
-| `REVIEW_SECRET_TOKEN` | yes | — | Shared secret between platform and student repo CI for PR review webhooks |
+| `CI_PR_WEBHOOK_TOKEN` | yes | — | Shared secret between platform and student repo CI for PR review webhooks |
 | `OPENAI_API_KEY` | yes | — | OpenAI API key for AI code review |
 | `OPENAI_BASE_URL` | no | `https://api.proxyapi.ru/openai/v1` | OpenAI-compatible API base URL |
 | `OPENAI_MODEL` | no | `gpt-4o` | Model to use for AI code review |

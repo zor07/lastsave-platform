@@ -1,5 +1,6 @@
 package com.zor07.lastsave.controller.dev
 
+import com.zor07.lastsave.service.review.PrReviewService
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepoRepository
@@ -26,6 +27,7 @@ class DevController(
     private val studentRepoRepository: StudentRepoRepository,
     private val messageLogRepository: MessageLogRepository,
     private val studentProgressService: StudentProgressService,
+    private val prReviewService: PrReviewService,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -57,6 +59,21 @@ class DevController(
         studentProgressRepository.deleteAllByStudentId(student.id)
         studentProgressService.startProgress(student)
         logger.info("resetProgress: done for student={}", student.id)
+        return ResponseEntity.ok().build()
+    }
+
+    @PostMapping("/review/pr")
+    fun reviewPr(
+        @RequestParam owner: String,
+        @RequestParam repo: String,
+        @RequestParam prNumber: Int,
+        @RequestParam githubUsername: String,
+    ): ResponseEntity<Void> {
+        val prUrl = "https://github.com/$owner/$repo/pull/$prNumber"
+        logger.info("reviewPr: owner={}, repo={}, prNumber={}, githubUsername={}", owner, repo, prNumber, githubUsername)
+        val diff = gitHubService.getPrDiff(owner, repo, prNumber)
+        logger.info("reviewPr: diff fetched, length={}", diff.length)
+        prReviewService.handlePrReview(githubUsername, prUrl, diff)
         return ResponseEntity.ok().build()
     }
 

@@ -1,5 +1,6 @@
 package com.zor07.lastsave.service.github
 
+import com.zor07.lastsave.annotation.ForLocalTesting
 import com.zor07.lastsave.dto.github.RepoPublicKeyResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -15,6 +16,7 @@ class GitHubService(
     @Qualifier("gitHubRestTemplate")
     private val restTemplate: RestTemplate,
     @Value("\${github.token}") private val token: String,
+    @Value("\${github.pr-token}") private val prToken: String,
     @Value("\${github.org}") private val org: String,
     @Value("\${app.base-url}") private val appBaseUrl: String,
     @Value("\${review.secret-token}") private val reviewSecretToken: String,
@@ -45,7 +47,7 @@ class GitHubService(
 
     private fun addRepoSecrets(repoName: String) {
         addSecret(repoName, "APP_BASE_URL", appBaseUrl)
-        addSecret(repoName, "REVIEW_SECRET_TOKEN", reviewSecretToken)
+        addSecret(repoName, "CI_PR_WEBHOOK_TOKEN", reviewSecretToken)
     }
 
     private fun addSecret(repoName: String, secretName: String, secretValue: String) {
@@ -64,6 +66,15 @@ class GitHubService(
         return restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Void>(authHeaders()), RepoPublicKeyResponse::class.java).body!!
     }
 
+    @ForLocalTesting
+    fun getPrDiff(owner: String, repo: String, prNumber: Int): String {
+        val url = "https://api.github.com/repos/$owner/$repo/pulls/$prNumber"
+        val headers = prAuthHeaders().apply {
+            add("Accept", "application/vnd.github.v3.diff")
+        }
+        return restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Void>(headers), String::class.java).body!!
+    }
+
     fun deleteRepo(repoName: String) {
         val url = "https://api.github.com/repos/$org/$repoName"
         restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity<Void>(authHeaders()), Void::class.java)
@@ -79,5 +90,11 @@ class GitHubService(
         HttpHeaders().apply {
             contentType = MediaType.APPLICATION_JSON
             add(HttpHeaders.AUTHORIZATION, "Bearer $token")
+        }
+
+    private fun prAuthHeaders(): HttpHeaders =
+        HttpHeaders().apply {
+            contentType = MediaType.APPLICATION_JSON
+            add(HttpHeaders.AUTHORIZATION, "Bearer $prToken")
         }
 }

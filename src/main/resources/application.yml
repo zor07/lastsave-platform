@@ -10,6 +10,7 @@ spring:
 
 github:
   token: ${GITHUB_TOKEN}
+  pr-token: ${GITHUB_PR_TOKEN}
   org: ${GITHUB_ORG}
   client-id: ${GITHUB_CLIENT_ID}
   client-secret: ${GITHUB_CLIENT_SECRET}
@@ -28,7 +29,7 @@ openai:
   model: ${OPENAI_MODEL:gpt-4o}
 
 review:
-  secret-token: ${REVIEW_SECRET_TOKEN}
+  secret-token: ${CI_PR_WEBHOOK_TOKEN}
 
 scheduler:
   enabled: ${SCHEDULER_ENABLED:false}
