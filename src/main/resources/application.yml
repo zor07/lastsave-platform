@@ -29,3 +29,6 @@ openai:
 
 review:
   secret-token: ${REVIEW_SECRET_TOKEN}
+
+scheduler:
+  enabled: ${SCHEDULER_ENABLED:false}

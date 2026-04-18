@@ -1,5 +1,6 @@
 package com.zor07.lastsave.controller.dev
 
+import com.zor07.lastsave.scheduler.ProgressScheduler
 import com.zor07.lastsave.service.github.GitHubService
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/dev")
 class DevController(
     private val gitHubService: GitHubService,
+    private val progressScheduler: ProgressScheduler,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -26,6 +28,13 @@ class DevController(
         val repoUrl = gitHubService.createRepoFromTemplate(templateName, githubUsername)
         logger.info("createRepo: created repoUrl={}", repoUrl)
         return ResponseEntity.ok(repoUrl)
+    }
+
+    @PostMapping("/scheduler/tick")
+    fun tick(): ResponseEntity<Void> {
+        logger.info("Manual scheduler tick triggered")
+        progressScheduler.doTick()
+        return ResponseEntity.ok().build()
     }
 
     @DeleteMapping("/github/repo")
