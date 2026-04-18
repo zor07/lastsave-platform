@@ -73,11 +73,11 @@ class ProgressFlowServiceImpl(
             logger.info("Section {} has no messages, skipping", sectionId)
             return
         }
-        send(student, first)
         val materials = materialService.getSectionMaterials(sectionId)
         if (materials.isNotEmpty()) {
             notificationService.sendText(student, materialService.formatMessage(materials))
         }
+        send(student, first)
     }
 
     private fun send(student: Student, message: Message) {
