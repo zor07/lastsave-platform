@@ -1,8 +1,5 @@
 package com.zor07.lastsave.service.github
 
-import com.goterl.lazysodium.LazySodiumJava
-import com.goterl.lazysodium.SodiumJava
-import com.goterl.lazysodium.interfaces.Box
 import com.zor07.lastsave.dto.github.RepoPublicKeyResponse
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -12,7 +9,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
-import java.util.Base64
 
 @Service
 class GitHubService(
@@ -22,6 +18,7 @@ class GitHubService(
     @Value("\${github.org}") private val org: String,
     @Value("\${app.base-url}") private val appBaseUrl: String,
     @Value("\${review.secret-token}") private val reviewSecretToken: String,
+    private val secretEncryptor: GitHubSecretEncryptor,
 ) {
 
     fun createRepoFromTemplate(
@@ -53,7 +50,7 @@ class GitHubService(
 
     private fun addSecret(repoName: String, secretName: String, secretValue: String) {
         val publicKey = getRepoPublicKey(repoName)
-        val encryptedValue = encryptSecret(publicKey.key, secretValue)
+        val encryptedValue = secretEncryptor.encrypt(publicKey.key, secretValue)
         val url = "https://api.github.com/repos/$org/$repoName/actions/secrets/$secretName"
         val body = mapOf(
             "encrypted_value" to encryptedValue,
@@ -67,13 +64,9 @@ class GitHubService(
         return restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Void>(authHeaders()), RepoPublicKeyResponse::class.java).body!!
     }
 
-    private fun encryptSecret(publicKey: String, secretValue: String): String {
-        val sodium = LazySodiumJava(SodiumJava())
-        val publicKeyBytes = Base64.getDecoder().decode(publicKey)
-        val messageBytes = secretValue.toByteArray(Charsets.UTF_8)
-        val cipherText = ByteArray(Box.SEALBYTES + messageBytes.size)
-        sodium.cryptoBoxSeal(cipherText, messageBytes, messageBytes.size.toLong(), publicKeyBytes)
-        return Base64.getEncoder().encodeToString(cipherText)
+    fun deleteRepo(repoName: String) {
+        val url = "https://api.github.com/repos/$org/$repoName"
+        restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity<Void>(authHeaders()), Void::class.java)
     }
 
     private fun addCollaborator(repoName: String, githubUsername: String) {

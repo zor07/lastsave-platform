@@ -34,6 +34,10 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
 }
 
+tasks.bootJar {
+    requiresUnpack("**/lazysodium-java-*.jar", "**/jna-*.jar")
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
