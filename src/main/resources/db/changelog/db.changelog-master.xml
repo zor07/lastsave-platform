@@ -13,6 +13,7 @@
     <include relativeToChangelogFile="true" file="changes/005-git-repository-data.xml"/>
     <include relativeToChangelogFile="true" file="changes/006-alter-block-git-repository.xml"/>
     <include relativeToChangelogFile="true" file="changes/007-create-student-repository.xml"/>
+    <include relativeToChangelogFile="true" file="changes/008-alter-block-git-repository-nullable.xml"/>
     <include relativeToChangelogFile="true" file="changes/data.sql"/>
 
 </databaseChangeLog>

@@ -15,8 +15,8 @@ INSERT INTO course (id, title) VALUES (1, 'Java Core');
 
 -- blocks
 INSERT INTO block (id, course_id, title, git_repository_id, "order") VALUES
-    (1, 1, 'Старт',    1, 1),
-    (2, 1, 'Это База', 1, 2);
+    (1, 1, 'Старт',    NULL, 1),
+    (2, 1, 'Это База', 1,    2);
 
 -- topics
 INSERT INTO topic (id, block_id, title, "order") VALUES

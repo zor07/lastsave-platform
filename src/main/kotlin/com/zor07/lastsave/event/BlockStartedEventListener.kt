@@ -26,6 +26,8 @@ class BlockStartedEventListener(
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     fun onBlockStarted(event: BlockStartedEvent) {
+        if (event.gitRepositoryId == null) return
+
         val existing = studentRepoRepository.findByStudentAndGitRepository(
             event.student.id,
             event.gitRepositoryId,
