@@ -4,13 +4,24 @@ import com.zor07.lastsave.model.NewStudentRepo
 import com.zor07.lastsave.model.StudentRepo
 import com.zor07.lastsave.table.StudentRepoTable
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.springframework.stereotype.Repository
 
 @Repository
 class StudentRepoRepository {
+
+    fun findAllByStudentId(studentId: Long): List<StudentRepo> =
+        StudentRepoTable.selectAll()
+            .where { StudentRepoTable.studentId eq studentId }
+            .map { it.toStudentRepo() }
+
+    fun deleteAllByStudentId(studentId: Long) {
+        StudentRepoTable.deleteWhere { StudentRepoTable.studentId eq studentId }
+    }
 
     fun findByStudentAndGitRepository(studentId: Long, gitRepositoryId: Long): StudentRepo? =
         StudentRepoTable.selectAll()

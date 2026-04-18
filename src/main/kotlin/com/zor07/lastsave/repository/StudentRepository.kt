@@ -37,6 +37,12 @@ class StudentRepository {
             .where { StudentProgressTable.status eq ProgressStatus.IN_PROGRESS.name }
             .map { it.toStudent() }
 
+    fun findById(id: Long): Student? =
+        StudentsTable.selectAll()
+            .where { StudentsTable.id eq id }
+            .singleOrNull()
+            ?.toStudent()
+
     fun findByChatId(chatId: Long): Student? =
         StudentsTable.selectAll()
             .where { StudentsTable.telegramChatId eq chatId }

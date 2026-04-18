@@ -2,6 +2,7 @@ package com.zor07.lastsave.controller.dev
 
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
+import com.zor07.lastsave.repository.StudentRepoRepository
 import com.zor07.lastsave.repository.StudentRepository
 import com.zor07.lastsave.scheduler.ProgressScheduler
 import com.zor07.lastsave.service.github.GitHubService
@@ -22,6 +23,7 @@ class DevController(
     private val progressScheduler: ProgressScheduler,
     private val studentRepository: StudentRepository,
     private val studentProgressRepository: StudentProgressRepository,
+    private val studentRepoRepository: StudentRepoRepository,
     private val messageLogRepository: MessageLogRepository,
     private val studentProgressService: StudentProgressService,
 ) {
@@ -41,10 +43,16 @@ class DevController(
 
     @Transactional
     @PostMapping("/progress/reset")
-    fun resetProgress(@RequestParam githubUsername: String): ResponseEntity<Void> {
-        logger.info("resetProgress: githubUsername={}", githubUsername)
-        val student = studentRepository.findByGithubUsername(githubUsername)
+    fun resetProgress(@RequestParam studentId: Long): ResponseEntity<Void> {
+        logger.info("resetProgress: studentId={}", studentId)
+        val student = studentRepository.findById(studentId)
             ?: return ResponseEntity.notFound().build()
+        studentRepoRepository.findAllByStudentId(student.id).forEach { repo ->
+            val repoName = repo.repoUrl.substringAfterLast("/")
+            logger.info("resetProgress: deleting GitHub repo={}", repoName)
+            gitHubService.deleteRepo(repoName)
+        }
+        studentRepoRepository.deleteAllByStudentId(student.id)
         messageLogRepository.deleteAllByStudentId(student.id)
         studentProgressRepository.deleteAllByStudentId(student.id)
         studentProgressService.startProgress(student)
