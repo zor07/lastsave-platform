@@ -5,7 +5,9 @@ import com.zor07.lastsave.model.NewStudentProgress
 import com.zor07.lastsave.model.StudentProgress
 import com.zor07.lastsave.table.StudentProgressTable
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.update
@@ -42,6 +44,10 @@ class StudentProgressRepository {
             it[status] = ProgressStatus.COMPLETED.name
             it[completedAt] = LocalDateTime.now()
         }
+    }
+
+    fun deleteAllByStudentId(studentId: Long) {
+        StudentProgressTable.deleteWhere { StudentProgressTable.studentId eq studentId }
     }
 
     fun findActiveByStudentId(studentId: Long): StudentProgress? =
