@@ -1,2 +1,5 @@
+server:
+  forward-headers-strategy: framework
+
 scheduler:
   enabled: ${SCHEDULER_ENABLED:true}
