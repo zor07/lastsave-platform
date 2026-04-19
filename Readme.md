@@ -41,6 +41,10 @@ docker compose up -d
 | `SCHEDULER_ENABLED` | no | `false` | Enable progress scheduler (auto-enabled in `prod` profile) |
 | `SPRING_PROFILES_ACTIVE` | no | — | Set to `prod` to enable scheduler unconditionally |
 
+## API
+
+Swagger UI доступен по адресу: `http://localhost:8080/swagger-ui/index.html`
+
 ## License
 
 MIT
