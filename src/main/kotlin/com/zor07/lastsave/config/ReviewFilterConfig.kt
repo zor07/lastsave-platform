@@ -20,7 +20,7 @@ class ReviewFilterConfig {
         @Value("\${review.secret-token}") secretToken: String,
     ): FilterRegistrationBean<ReviewProtectionFilter> {
         val registration = FilterRegistrationBean(ReviewProtectionFilter(secretToken))
-        registration.addUrlPatterns("/api/pr-review/*", "/api/pr-review")
+        registration.addUrlPatterns("/api/pr/*")
         return registration
     }
 }
