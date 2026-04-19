@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository
 @Repository
 class GitRepositoryRepository {
 
+    fun findAll(): List<GitRepository> =
+        GitRepositoryTable.selectAll().map { it.toGitRepository() }
+
     fun findById(id: Long): GitRepository? =
         GitRepositoryTable.selectAll()
             .where { GitRepositoryTable.id eq id }

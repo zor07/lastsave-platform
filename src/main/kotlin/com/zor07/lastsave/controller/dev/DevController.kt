@@ -1,6 +1,7 @@
 package com.zor07.lastsave.controller.dev
 
 import com.zor07.lastsave.service.review.PrReviewService
+import com.zor07.lastsave.repository.GitRepositoryRepository
 import com.zor07.lastsave.repository.MessageLogRepository
 import com.zor07.lastsave.repository.StudentProgressRepository
 import com.zor07.lastsave.repository.StudentRepoRepository
@@ -28,6 +29,7 @@ class DevController(
     private val messageLogRepository: MessageLogRepository,
     private val studentProgressService: StudentProgressService,
     private val prReviewService: PrReviewService,
+    private val gitRepositoryRepository: GitRepositoryRepository,
 ) {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -49,10 +51,14 @@ class DevController(
         logger.info("resetProgress: studentId={}", studentId)
         val student = studentRepository.findById(studentId)
             ?: return ResponseEntity.notFound().build()
-        studentRepoRepository.findAllByStudentId(student.id).forEach { repo ->
-            val repoName = repo.repoUrl.substringAfterLast("/")
+        gitRepositoryRepository.findAll().forEach { template ->
+            val repoName = "${template.name}-${student.githubUsername}"
             logger.info("resetProgress: deleting GitHub repo={}", repoName)
-            gitHubService.deleteRepo(repoName)
+            try {
+                gitHubService.deleteRepo(repoName)
+            } catch (e: Exception) {
+                logger.warn("resetProgress: failed to delete GitHub repo={}, skipping: {}", repoName, e.message)
+            }
         }
         studentRepoRepository.deleteAllByStudentId(student.id)
         messageLogRepository.deleteAllByStudentId(student.id)
