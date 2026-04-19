@@ -5,6 +5,7 @@ import com.zor07.lastsave.service.notification.NotificationService
 import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PrReportServiceImpl(
@@ -15,6 +16,7 @@ class PrReportServiceImpl(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
+    @Transactional
     override fun handlePrReport(request: PrReportRequest) {
         val student = studentService.findByGithubUsername(request.githubUsername)
         if (student == null) {
