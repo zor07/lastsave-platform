@@ -38,7 +38,7 @@ class CallbackHandler(
             if (telegramMessageId != null) {
                 notificationService.removeKeyboard(student, telegramMessageId)
             }
-            notificationService.sendText(student, "Супер! Скоро вернусь с апдейтами")
+            // next message will arrive on the next scheduler tick
         } catch (e: Exception) {
             logger.error("Failed to process callback: {}", e.message)
         }

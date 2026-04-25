@@ -49,7 +49,7 @@ class BlockStartedEventListener(
         try {
             notificationService.sendText(
                 event.student,
-                "Новый спринт! Сосредоточимся на «${event.blockTitle}». Твой репозиторий для работы: $repoUrl",
+                "Твой репозиторий для работы: $repoUrl\n\nПрими приглашение стать коллаборатором — оно уже у тебя на GitHub. Без этого задания не получится сдать.",
             )
         } catch (e: Exception) {
             logger.error("Failed to send repo notification to student ${event.student.id}", e)
