@@ -49,15 +49,28 @@ class MaterialServiceImplTest {
     // --- formatMessage ---
 
     @Test
-    fun `single TEXT material - correct format`() {
+    fun `single THEORY material - correct format`() {
         val result = service.formatMessage(listOf(
-            material(type = MaterialType.TEXT, title = "Справочник", url = "https://example.com/1")
+            material(type = MaterialType.THEORY, title = "Справочник", url = "https://example.com/1")
         ))
 
         assertThat(result).isEqualTo("""
-            Почитай документацию:
+            Теория по текущему разделу:
 
             Справочник: https://example.com/1
+        """.trimIndent())
+    }
+
+    @Test
+    fun `single PRACTICE material - correct format`() {
+        val result = service.formatMessage(listOf(
+            material(type = MaterialType.PRACTICE, title = "Задание", url = "https://example.com/tasks")
+        ))
+
+        assertThat(result).isEqualTo("""
+            Техническое задание:
+
+            Задание: https://example.com/tasks
         """.trimIndent())
     }
 
@@ -75,14 +88,14 @@ class MaterialServiceImplTest {
     }
 
     @Test
-    fun `multiple TEXT materials - all listed under one header`() {
+    fun `multiple THEORY materials - all listed under one header`() {
         val result = service.formatMessage(listOf(
-            material(id = 1L, type = MaterialType.TEXT, title = "Справочник по синтаксису", url = "https://example.com/1"),
-            material(id = 2L, type = MaterialType.TEXT, title = "Настройка окружения", url = "https://example.com/2"),
+            material(id = 1L, type = MaterialType.THEORY, title = "Справочник по синтаксису", url = "https://example.com/1"),
+            material(id = 2L, type = MaterialType.THEORY, title = "Настройка окружения", url = "https://example.com/2"),
         ))
 
         assertThat(result).isEqualTo("""
-            Почитай документацию:
+            Теория по текущему разделу:
 
             Справочник по синтаксису: https://example.com/1
             Настройка окружения: https://example.com/2
@@ -90,16 +103,39 @@ class MaterialServiceImplTest {
     }
 
     @Test
-    fun `mixed TEXT and VIDEO materials - two sections`() {
+    fun `mixed THEORY and PRACTICE materials - two sections`() {
         val result = service.formatMessage(listOf(
-            material(id = 1L, type = MaterialType.TEXT, title = "Статья", url = "https://example.com/text"),
-            material(id = 2L, type = MaterialType.VIDEO, title = "Видео", url = "https://example.com/video"),
+            material(id = 1L, type = MaterialType.THEORY, title = "Статья", url = "https://example.com/theory"),
+            material(id = 2L, type = MaterialType.PRACTICE, title = "Задание", url = "https://example.com/tasks"),
         ))
 
         assertThat(result).isEqualTo("""
-            Почитай документацию:
+            Теория по текущему разделу:
 
-            Статья: https://example.com/text
+            Статья: https://example.com/theory
+
+            Техническое задание:
+
+            Задание: https://example.com/tasks
+        """.trimIndent())
+    }
+
+    @Test
+    fun `mixed THEORY, PRACTICE and VIDEO materials - three sections`() {
+        val result = service.formatMessage(listOf(
+            material(id = 1L, type = MaterialType.THEORY, title = "Статья", url = "https://example.com/theory"),
+            material(id = 2L, type = MaterialType.PRACTICE, title = "Задание", url = "https://example.com/tasks"),
+            material(id = 3L, type = MaterialType.VIDEO, title = "Видео", url = "https://example.com/video"),
+        ))
+
+        assertThat(result).isEqualTo("""
+            Теория по текущему разделу:
+
+            Статья: https://example.com/theory
+
+            Техническое задание:
+
+            Задание: https://example.com/tasks
 
             Посмотри видео:
 

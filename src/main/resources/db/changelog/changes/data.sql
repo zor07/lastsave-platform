@@ -80,34 +80,34 @@ INSERT INTO section (id, topic_id, title, "order", unlock_condition) VALUES
 -- materials
 INSERT INTO material (id, section_id, type, title, url, "order") VALUES
     -- block1
-    (1,  1,  'TEXT', 'Установка JDK',                      'https://github.com/zor07/lastsave-content/blob/main/block1/topic1/theory.md', 1),
-    (2,  2,  'TEXT', 'Установка IntelliJ IDEA',             'https://github.com/zor07/lastsave-content/blob/main/block1/topic2/theory.md', 1),
-    (3,  3,  'TEXT', 'Первый проект: Hello World',          'https://github.com/zor07/lastsave-content/blob/main/block1/topic3/theory.md', 1),
+    (1,  1,  'THEORY',   'Установка JDK',                      'https://github.com/zor07/lastsave-content/blob/main/block1/topic1/theory.md', 1),
+    (2,  2,  'THEORY',   'Установка IntelliJ IDEA',             'https://github.com/zor07/lastsave-content/blob/main/block1/topic2/theory.md', 1),
+    (3,  3,  'THEORY',   'Первый проект: Hello World',          'https://github.com/zor07/lastsave-content/blob/main/block1/topic3/theory.md', 1),
     -- block2
-    (4,  5,  'TEXT', 'Примитивы и базовые типы — теория',   'https://github.com/zor07/lastsave-content/blob/main/block2/topic1/theory.md', 1),
-    (5,  6,  'TEXT', 'Примитивы и базовые типы — задание',  'https://github.com/zor07/lastsave-content/blob/main/block2/topic1/tasks.md',  1),
-    (6,  7,  'TEXT', 'Синтаксис — теория',                  'https://github.com/zor07/lastsave-content/blob/main/block2/topic2/theory.md', 1),
-    (7,  8,  'TEXT', 'Синтаксис — задание',                 'https://github.com/zor07/lastsave-content/blob/main/block2/topic2/tasks.md',  1),
-    (8,  9,  'TEXT', 'Naming Conventions',                  'https://github.com/zor07/lastsave-content/blob/main/block2/topic3/theory.md', 1),
+    (4,  5,  'THEORY',   'Примитивы и базовые типы',            'https://github.com/zor07/lastsave-content/blob/main/block2/topic1/theory.md', 1),
+    (5,  6,  'PRACTICE', 'Примитивы и базовые типы — задание',  'https://github.com/zor07/lastsave-content/blob/main/block2/topic1/tasks.md',  1),
+    (6,  7,  'THEORY',   'Синтаксис',                           'https://github.com/zor07/lastsave-content/blob/main/block2/topic2/theory.md', 1),
+    (7,  8,  'PRACTICE', 'Синтаксис — задание',                 'https://github.com/zor07/lastsave-content/blob/main/block2/topic2/tasks.md',  1),
+    (8,  9,  'THEORY',   'Naming Conventions',                  'https://github.com/zor07/lastsave-content/blob/main/block2/topic3/theory.md', 1),
     -- block3
-    (9,  10, 'TEXT', 'Класс String — теория',               'https://github.com/zor07/lastsave-content/blob/main/block3/topic1/theory.md', 1),
-    (10, 11, 'TEXT', 'Класс String — задание',              'https://github.com/zor07/lastsave-content/blob/main/block3/topic1/tasks.md',  1),
-    (11, 12, 'TEXT', 'Особенности String — теория',         'https://github.com/zor07/lastsave-content/blob/main/block3/topic2/theory.md', 1),
-    (12, 13, 'TEXT', 'Особенности String — задание',        'https://github.com/zor07/lastsave-content/blob/main/block3/topic2/tasks.md',  1),
+    (9,  10, 'THEORY',   'Класс String',                        'https://github.com/zor07/lastsave-content/blob/main/block3/topic1/theory.md', 1),
+    (10, 11, 'PRACTICE', 'Класс String — задание',              'https://github.com/zor07/lastsave-content/blob/main/block3/topic1/tasks.md',  1),
+    (11, 12, 'THEORY',   'Особенности String',                  'https://github.com/zor07/lastsave-content/blob/main/block3/topic2/theory.md', 1),
+    (12, 13, 'PRACTICE', 'Особенности String — задание',        'https://github.com/zor07/lastsave-content/blob/main/block3/topic2/tasks.md',  1),
     -- block4
-    (13, 14, 'TEXT', 'Одномерные массивы — теория',         'https://github.com/zor07/lastsave-content/blob/main/block4/topic1/theory.md', 1),
-    (14, 15, 'TEXT', 'Одномерные массивы — задание',        'https://github.com/zor07/lastsave-content/blob/main/block4/topic1/tasks.md',  1),
+    (13, 14, 'THEORY',   'Одномерные массивы',                  'https://github.com/zor07/lastsave-content/blob/main/block4/topic1/theory.md', 1),
+    (14, 15, 'PRACTICE', 'Одномерные массивы — задание',        'https://github.com/zor07/lastsave-content/blob/main/block4/topic1/tasks.md',  1),
     -- block5
-    (15, 16, 'TEXT', 'Классы и объекты — теория',           'https://github.com/zor07/lastsave-content/blob/main/block5/topic1/theory.md', 1),
-    (16, 17, 'TEXT', 'Классы и объекты — задание',          'https://github.com/zor07/lastsave-content/blob/main/block5/topic1/tasks.md',  1),
-    (17, 18, 'TEXT', 'Статика — теория',                    'https://github.com/zor07/lastsave-content/blob/main/block5/topic2/theory.md', 1),
-    (18, 19, 'TEXT', 'Статика — задание',                   'https://github.com/zor07/lastsave-content/blob/main/block5/topic2/tasks.md',  1),
-    (19, 20, 'TEXT', 'Модификаторы доступа — теория',       'https://github.com/zor07/lastsave-content/blob/main/block5/topic3/theory.md', 1),
-    (20, 21, 'TEXT', 'Модификаторы доступа — задание',      'https://github.com/zor07/lastsave-content/blob/main/block5/topic3/tasks.md',  1),
-    (21, 22, 'TEXT', 'Пакеты и импорты — теория',           'https://github.com/zor07/lastsave-content/blob/main/block5/topic4/theory.md', 1),
-    (22, 23, 'TEXT', 'Пакеты и импорты — задание',          'https://github.com/zor07/lastsave-content/blob/main/block5/topic4/tasks.md',  1),
-    (23, 24, 'TEXT', 'Перегрузка методов — теория',         'https://github.com/zor07/lastsave-content/blob/main/block5/topic5/theory.md', 1),
-    (24, 25, 'TEXT', 'Перегрузка методов — задание',        'https://github.com/zor07/lastsave-content/blob/main/block5/topic5/tasks.md',  1);
+    (15, 16, 'THEORY',   'Классы и объекты',                    'https://github.com/zor07/lastsave-content/blob/main/block5/topic1/theory.md', 1),
+    (16, 17, 'PRACTICE', 'Классы и объекты — задание',          'https://github.com/zor07/lastsave-content/blob/main/block5/topic1/tasks.md',  1),
+    (17, 18, 'THEORY',   'Статика',                             'https://github.com/zor07/lastsave-content/blob/main/block5/topic2/theory.md', 1),
+    (18, 19, 'PRACTICE', 'Статика — задание',                   'https://github.com/zor07/lastsave-content/blob/main/block5/topic2/tasks.md',  1),
+    (19, 20, 'THEORY',   'Модификаторы доступа',                'https://github.com/zor07/lastsave-content/blob/main/block5/topic3/theory.md', 1),
+    (20, 21, 'PRACTICE', 'Модификаторы доступа — задание',      'https://github.com/zor07/lastsave-content/blob/main/block5/topic3/tasks.md',  1),
+    (21, 22, 'THEORY',   'Пакеты и импорты',                    'https://github.com/zor07/lastsave-content/blob/main/block5/topic4/theory.md', 1),
+    (22, 23, 'PRACTICE', 'Пакеты и импорты — задание',          'https://github.com/zor07/lastsave-content/blob/main/block5/topic4/tasks.md',  1),
+    (23, 24, 'THEORY',   'Перегрузка методов',                  'https://github.com/zor07/lastsave-content/blob/main/block5/topic5/theory.md', 1),
+    (24, 25, 'PRACTICE', 'Перегрузка методов — задание',        'https://github.com/zor07/lastsave-content/blob/main/block5/topic5/tasks.md',  1);
 
 -- messages
 INSERT INTO message (id, section_id, sender, text, callback_text, wait_for, "order") VALUES

@@ -17,17 +17,24 @@ class MaterialServiceImpl(
         val sb = StringBuilder()
         val byType = materials.groupBy { it.type }
 
-        byType[MaterialType.TEXT]?.let { texts ->
-            sb.appendLine("Почитай документацию:")
+        byType[MaterialType.THEORY]?.let { items ->
+            sb.appendLine("Теория по текущему разделу:")
             sb.appendLine()
-            texts.forEach { sb.appendLine("${it.title}: ${it.url}") }
+            items.forEach { sb.appendLine("${it.title}: ${it.url}") }
         }
 
-        byType[MaterialType.VIDEO]?.let { videos ->
+        byType[MaterialType.PRACTICE]?.let { items ->
+            if (sb.isNotEmpty()) sb.appendLine()
+            sb.appendLine("Техническое задание:")
+            sb.appendLine()
+            items.forEach { sb.appendLine("${it.title}: ${it.url}") }
+        }
+
+        byType[MaterialType.VIDEO]?.let { items ->
             if (sb.isNotEmpty()) sb.appendLine()
             sb.appendLine("Посмотри видео:")
             sb.appendLine()
-            videos.forEach { sb.appendLine("${it.title}: ${it.url}") }
+            items.forEach { sb.appendLine("${it.title}: ${it.url}") }
         }
 
         return sb.toString().trimEnd()

@@ -7,7 +7,7 @@ object MaterialFixture {
     fun material(
         id: Long = 1L,
         sectionId: Long = 10L,
-        type: MaterialType = MaterialType.TEXT,
+        type: MaterialType = MaterialType.THEORY,
         title: String = "title",
         url: String = "https://example.com",
         order: Int = 1,
