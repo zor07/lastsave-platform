@@ -1,5 +1,5 @@
 package com.zor07.lastsave.service.review
 
 interface AiReviewService {
-    fun review(diff: String): String
+    fun review(diff: String, tasksContent: String? = null): String
 }

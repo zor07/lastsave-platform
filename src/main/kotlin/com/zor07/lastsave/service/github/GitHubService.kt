@@ -75,6 +75,17 @@ class GitHubService(
         return restTemplate.exchange(url, HttpMethod.GET, HttpEntity<Void>(headers), String::class.java).body!!
     }
 
+    fun fetchRawContent(blobUrl: String): String? {
+        val rawUrl = blobUrl
+            .replace("https://github.com/", "https://raw.githubusercontent.com/")
+            .replace("/blob/", "/")
+        return try {
+            restTemplate.getForObject(rawUrl, String::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun deleteRepo(repoName: String) {
         val url = "https://api.github.com/repos/$org/$repoName"
         restTemplate.exchange(url, HttpMethod.DELETE, HttpEntity<Void>(authHeaders()), Void::class.java)
