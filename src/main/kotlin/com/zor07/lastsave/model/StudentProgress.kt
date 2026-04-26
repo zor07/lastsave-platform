@@ -19,3 +19,8 @@ data class StudentProgress(
     val startedAt: LocalDateTime?,
     val completedAt: LocalDateTime?,
 )
+
+data class BlockTopicPosition(
+    val blockOrder: Int,
+    val topicOrder: Int,
+)
