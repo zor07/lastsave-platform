@@ -8,7 +8,7 @@ object BlocksTable : Table("block") {
     val title = varchar("title", 255)
     val gitRepositoryId = long("git_repository_id").nullable()
     val order = integer("order")
-    val code = varchar("code", 50).nullable()
+    val code = varchar("code", 50)
 
     override val primaryKey = PrimaryKey(id)
 }

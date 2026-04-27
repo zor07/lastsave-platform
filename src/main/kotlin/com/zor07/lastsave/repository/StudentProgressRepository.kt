@@ -76,11 +76,7 @@ class StudentProgressRepository {
             }
             .limit(1)
             .singleOrNull()
-            ?.let {
-                val blockCode = it[BlocksTable.code] ?: return null
-                val topicCode = it[TopicsTable.code] ?: return null
-                BlockTopicPosition(blockCode = blockCode, topicCode = topicCode)
-            }
+            ?.let { BlockTopicPosition(blockCode = it[BlocksTable.code], topicCode = it[TopicsTable.code]) }
 
     private fun ResultRow.toStudentProgress() = StudentProgress(
         id = this[StudentProgressTable.id],

@@ -9,13 +9,13 @@
     <changeSet id="009-add-code-to-block-and-topic" author="codex">
         <addColumn tableName="block">
             <column name="code" type="VARCHAR(50)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
         </addColumn>
 
         <addColumn tableName="topic">
             <column name="code" type="VARCHAR(50)">
-                <constraints nullable="true"/>
+                <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
