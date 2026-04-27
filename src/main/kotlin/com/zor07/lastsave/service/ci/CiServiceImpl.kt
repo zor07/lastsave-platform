@@ -12,5 +12,5 @@ class CiServiceImpl(
     @Transactional(readOnly = true)
     override fun getTestTag(githubUsername: String): String? =
         studentProgressRepository.findActivePosition(githubUsername)
-            ?.let { "block%02d.topic%02d".format(it.blockOrder, it.topicOrder) }
+            ?.let { "${it.blockCode}.${it.topicCode}" }
 }

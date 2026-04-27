@@ -21,6 +21,6 @@ data class StudentProgress(
 )
 
 data class BlockTopicPosition(
-    val blockOrder: Int,
-    val topicOrder: Int,
+    val blockCode: String,
+    val topicCode: String,
 )

@@ -14,35 +14,35 @@ DELETE FROM course;
 INSERT INTO course (id, title) VALUES (1, 'Java Core');
 
 -- blocks
-INSERT INTO block (id, course_id, title, git_repository_id, "order") VALUES
-    (1, 1, 'Старт',        NULL, 1),
-    (2, 1, 'Это База',     1,    2),
-    (3, 1, 'Строки',       NULL, 3),
-    (4, 1, 'Массивы',      NULL, 4),
-    (5, 1, 'ООП базово',   NULL, 5);
+INSERT INTO block (id, course_id, title, git_repository_id, "order", code) VALUES
+    (1, 1, 'Старт',        NULL, 1, 'block01'),
+    (2, 1, 'Это База',     1,    2, 'block02'),
+    (3, 1, 'Строки',       NULL, 3, 'block03'),
+    (4, 1, 'Массивы',      NULL, 4, 'block04'),
+    (5, 1, 'ООП базово',   NULL, 5, 'block05');
 
 -- topics
-INSERT INTO topic (id, block_id, title, "order") VALUES
+INSERT INTO topic (id, block_id, title, "order", code) VALUES
     -- block1
-    (1,  1, 'Установка JDK',                                1),
-    (2,  1, 'Установка IntelliJ IDEA',                      2),
-    (3,  1, 'Первый проект: Hello World',                   3),
+    (1,  1, 'Установка JDK',                                1, 'topic01'),
+    (2,  1, 'Установка IntelliJ IDEA',                      2, 'topic02'),
+    (3,  1, 'Первый проект: Hello World',                   3, 'topic03'),
     -- block2
-    (4,  2, 'Старт спринта',                                1),
-    (5,  2, 'Примитивы и базовые типы',                     2),
-    (6,  2, 'Синтаксис: операторы, условия, циклы, методы', 3),
-    (7,  2, 'Naming Conventions',                           4),
+    (4,  2, 'Старт спринта',                                1, 'topic01'),
+    (5,  2, 'Примитивы и базовые типы',                     2, 'topic02'),
+    (6,  2, 'Синтаксис: операторы, условия, циклы, методы', 3, 'topic03'),
+    (7,  2, 'Naming Conventions',                           4, 'topic04'),
     -- block3
-    (8,  3, 'Класс String — основы',                        1),
-    (9,  3, 'Особенности String',                           2),
+    (8,  3, 'Класс String — основы',                        1, 'topic01'),
+    (9,  3, 'Особенности String',                           2, 'topic02'),
     -- block4
-    (10, 4, 'Одномерные массивы',                           1),
+    (10, 4, 'Одномерные массивы',                           1, 'topic01'),
     -- block5
-    (11, 5, 'Классы, объекты, поля, методы',                1),
-    (12, 5, 'Статика — static поля и методы',               2),
-    (13, 5, 'Модификаторы доступа',                         3),
-    (14, 5, 'Пакеты и импорты',                             4),
-    (15, 5, 'Перегрузка методов',                           5);
+    (11, 5, 'Классы, объекты, поля, методы',                1, 'topic01'),
+    (12, 5, 'Статика — static поля и методы',               2, 'topic02'),
+    (13, 5, 'Модификаторы доступа',                         3, 'topic03'),
+    (14, 5, 'Пакеты и импорты',                             4, 'topic04'),
+    (15, 5, 'Перегрузка методов',                           5, 'topic05');
 
 -- sections
 INSERT INTO section (id, topic_id, title, "order", unlock_condition) VALUES

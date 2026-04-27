@@ -7,6 +7,7 @@ object TopicsTable : Table("topic") {
     val blockId = long("block_id")
     val title = varchar("title", 255)
     val order = integer("order")
+    val code = varchar("code", 50).nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

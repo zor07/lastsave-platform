@@ -69,14 +69,18 @@ class StudentProgressRepository {
             .join(SectionsTable, JoinType.INNER) { StudentProgressTable.sectionId eq SectionsTable.id }
             .join(TopicsTable, JoinType.INNER) { SectionsTable.topicId eq TopicsTable.id }
             .join(BlocksTable, JoinType.INNER) { TopicsTable.blockId eq BlocksTable.id }
-            .select(BlocksTable.order, TopicsTable.order)
+            .select(BlocksTable.code, TopicsTable.code)
             .where {
                 (StudentsTable.githubUsername eq githubUsername) and
                 (StudentProgressTable.status eq ProgressStatus.IN_PROGRESS.name)
             }
             .limit(1)
             .singleOrNull()
-            ?.let { BlockTopicPosition(blockOrder = it[BlocksTable.order], topicOrder = it[TopicsTable.order]) }
+            ?.let {
+                val blockCode = it[BlocksTable.code] ?: return null
+                val topicCode = it[TopicsTable.code] ?: return null
+                BlockTopicPosition(blockCode = blockCode, topicCode = topicCode)
+            }
 
     private fun ResultRow.toStudentProgress() = StudentProgress(
         id = this[StudentProgressTable.id],
