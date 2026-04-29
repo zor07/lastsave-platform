@@ -1,6 +1,7 @@
 package com.zor07.lastsave.service.review
 
 import com.zor07.lastsave.dto.review.PrReportRequest
+import com.zor07.lastsave.repository.ReviewJobRepository
 import com.zor07.lastsave.service.notification.NotificationService
 import com.zor07.lastsave.service.student.StudentService
 import org.slf4j.LoggerFactory
@@ -11,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 class PrReportServiceImpl(
     private val studentService: StudentService,
     private val notificationService: NotificationService,
-    private val prReviewService: PrReviewService,
+    private val reviewJobRepository: ReviewJobRepository,
 ) : PrReportService {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -32,7 +33,7 @@ class PrReportServiceImpl(
         }
 
         notificationService.sendText(student, "Тесты прошли успешно, жди ревью кода")
-        logger.info("handlePrReport: tests passed for student={}, starting AI review", student.id)
-        prReviewService.handlePrReview(request.githubUsername, request.prUrl, request.diff)
+        reviewJobRepository.save(request.githubUsername, request.prUrl, request.diff)
+        logger.info("handlePrReport: review job created for student={}", student.id)
     }
 }
