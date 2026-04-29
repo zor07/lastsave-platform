@@ -5,6 +5,7 @@ import com.zor07.lastsave.service.review.ReviewJobProcessor
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class ReviewJobScheduler(
@@ -15,6 +16,7 @@ class ReviewJobScheduler(
     private val logger = LoggerFactory.getLogger(javaClass)
 
     @Scheduled(fixedDelay = 10_000)
+    @Transactional(readOnly = true)
     fun processJobs() {
         val jobs = reviewJobRepository.findPending()
         if (jobs.isEmpty()) return

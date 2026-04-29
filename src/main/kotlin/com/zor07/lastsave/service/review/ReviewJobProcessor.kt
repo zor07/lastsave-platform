@@ -4,6 +4,7 @@ import com.zor07.lastsave.model.ReviewJob
 import com.zor07.lastsave.repository.ReviewJobRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
 @Service
@@ -14,7 +15,7 @@ class ReviewJobProcessor(
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     fun process(job: ReviewJob) {
         reviewJobRepository.markProcessing(job.id)
         try {
